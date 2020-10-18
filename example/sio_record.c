@@ -12,7 +12,15 @@
 #include <string.h>
 #include <math.h>
 #include <errno.h>
+
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#define sleep(x) Sleep(1000*(x))
+#else
 #include <unistd.h>
+#endif
+
 
 struct RecordContext {
     struct SoundIoRingBuffer *ring_buffer;
@@ -53,7 +61,7 @@ static int min_int(int a, int b) {
 }
 
 static void read_callback(struct SoundIoInStream *instream, int frame_count_min, int frame_count_max) {
-    struct RecordContext *rc = instream->userdata;
+    struct RecordContext *rc = (struct RecordContext*)instream->userdata;
     struct SoundIoChannelArea *areas;
     int err;
 
