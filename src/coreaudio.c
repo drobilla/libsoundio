@@ -9,6 +9,11 @@
 #include "soundio_private.h"
 
 #include <assert.h>
+#include <AvailabilityMacros.h>
+
+#if !defined(MAC_OS_VERSION_12_0) || (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_12_0)
+    #define kAudioObjectPropertyElementMain kAudioObjectPropertyElementMaster
+#endif
 
 #include "AvailabilityMacros.h"
 #ifndef MAC_OS_VERSION_12_0
