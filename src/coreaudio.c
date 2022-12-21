@@ -956,10 +956,10 @@ static int set_ca_desc(enum SoundIoFormat fmt, AudioStreamBasicDescription *desc
         desc->mFormatFlags = kAudioFormatFlagIsSignedInteger;
         desc->mBitsPerChannel = 16;
         break;
-	case SoundIoFormatS24LE:
-		desc->mFormatFlags = kAudioFormatFlagIsSignedInteger;
-		desc->mBitsPerChannel = 24;
-		break;
+    case SoundIoFormatS24LE:
+        desc->mFormatFlags = kAudioFormatFlagIsSignedInteger;
+        desc->mBitsPerChannel = 24;
+        break;
     default:
         return SoundIoErrorIncompatibleDevice;
     }
@@ -1061,10 +1061,10 @@ static int outstream_open_ca(struct SoundIoPrivate *si, struct SoundIoOutStreamP
         return SoundIoErrorOpeningDevice;
     }
 
-	if ((os_err = AudioUnitGetParameter (osca->instance, kHALOutputParam_Volume, kAudioUnitScope_Global, 0, &outstream->volume))) {
-		outstream_destroy_ca(si, os);
-		return SoundIoErrorOpeningDevice;
-	}
+    if ((os_err = AudioUnitGetParameter (osca->instance, kHALOutputParam_Volume, kAudioUnitScope_Global, 0, &outstream->volume))) {
+        outstream_destroy_ca(si, os);
+        return SoundIoErrorOpeningDevice;
+    }
 
     osca->hardware_latency = dca->latency_frames / (double)outstream->sample_rate;
 

@@ -488,11 +488,11 @@ static void deinit_refresh_devices(struct RefreshDevices *rd) {
     soundio_device_unref(rd->device_raw);
     if (rd->mm_device)
         IMMDevice_Release(rd->mm_device);
-	if (rd->default_render_device)
-	{
-		IMMDevice_Release(rd->default_render_device);
-		free(rd->default_render_id);
-	}
+    if (rd->default_render_device)
+    {
+        IMMDevice_Release(rd->default_render_device);
+        free(rd->default_render_id);
+    }
     if (rd->default_capture_device)
     {
         IMMDevice_Release(rd->default_capture_device);
@@ -2093,8 +2093,8 @@ static int instream_begin_read_wasapi(struct SoundIoPrivate *si, struct SoundIoI
         {
             return SoundIoErrorStreaming;
         }
-		isw->opened_buf_frames = frames_to_read;
-		isw->read_buf_frames_left = frames_to_read;
+        isw->opened_buf_frames = frames_to_read;
+        isw->read_buf_frames_left = frames_to_read;
 
         if (flags & AUDCLNT_BUFFERFLAGS_SILENT)
             isw->read_buf = NULL;
@@ -2108,7 +2108,7 @@ static int instream_begin_read_wasapi(struct SoundIoPrivate *si, struct SoundIoI
             isw->areas[ch].ptr = isw->read_buf + ch * instream->bytes_per_sample;
             isw->areas[ch].step = instream->bytes_per_frame;
 
-			isw->areas[ch].ptr += instream->bytes_per_frame * (isw->opened_buf_frames - isw->read_buf_frames_left);
+            isw->areas[ch].ptr += instream->bytes_per_frame * (isw->opened_buf_frames - isw->read_buf_frames_left);
         }
 
         *out_areas = isw->areas;
@@ -2123,13 +2123,13 @@ static int instream_end_read_wasapi(struct SoundIoPrivate *si, struct SoundIoInS
     struct SoundIoInStreamWasapi *isw = &is->backend_data.wasapi;
     HRESULT hr;
 
-	isw->read_buf_frames_left -= isw->read_frame_count;
+    isw->read_buf_frames_left -= isw->read_frame_count;
 
-	if (isw->read_buf_frames_left <= 0) {
-		if (FAILED(hr = IAudioCaptureClient_ReleaseBuffer(isw->audio_capture_client, isw->opened_buf_frames))) {
-			return SoundIoErrorStreaming;
-		}
-	}
+    if (isw->read_buf_frames_left <= 0) {
+        if (FAILED(hr = IAudioCaptureClient_ReleaseBuffer(isw->audio_capture_client, isw->opened_buf_frames))) {
+            return SoundIoErrorStreaming;
+        }
+    }
 
     return 0;
 }
