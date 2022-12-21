@@ -191,7 +191,7 @@ static int outstream_open_dummy(struct SoundIoPrivate *si, struct SoundIoOutStre
 
     osd->period_duration = outstream->software_latency / 2.0;
 
-    int err;
+    int err = 0;
     int buffer_size = outstream->bytes_per_frame * outstream->sample_rate * outstream->software_latency;
     if ((err = soundio_ring_buffer_init(&osd->ring_buffer, buffer_size))) {
         outstream_destroy_dummy(si, os);
@@ -221,7 +221,7 @@ static int outstream_start_dummy(struct SoundIoPrivate *si, struct SoundIoOutStr
     struct SoundIo *soundio = &si->pub;
     assert(!osd->thread);
     SOUNDIO_ATOMIC_FLAG_TEST_AND_SET(osd->abort_flag);
-    int err;
+    int err = 0;
     if ((err = soundio_os_thread_create(playback_thread_run, os,
                     soundio->emit_rtprio_warning, &osd->thread)))
     {
@@ -306,7 +306,7 @@ static int instream_open_dummy(struct SoundIoPrivate *si, struct SoundIoInStream
 
     double target_buffer_duration = isd->period_duration * 4.0;
 
-    int err;
+    int err = 0;
     int buffer_size = instream->bytes_per_frame * instream->sample_rate * target_buffer_duration;
     if ((err = soundio_ring_buffer_init(&isd->ring_buffer, buffer_size))) {
         instream_destroy_dummy(si, is);
@@ -336,7 +336,7 @@ static int instream_start_dummy(struct SoundIoPrivate *si, struct SoundIoInStrea
     struct SoundIo *soundio = &si->pub;
     assert(!isd->thread);
     SOUNDIO_ATOMIC_FLAG_TEST_AND_SET(isd->abort_flag);
-    int err;
+    int err = 0;
     if ((err = soundio_os_thread_create(capture_thread_run, is,
                     soundio->emit_rtprio_warning, &isd->thread)))
     {
@@ -474,7 +474,7 @@ int soundio_dummy_init(struct SoundIoPrivate *si) {
             return SoundIoErrorNoMem;
         }
 
-        int err;
+        int err = 0;
         if ((err = set_all_device_channel_layouts(device))) {
             soundio_device_unref(device);
             destroy_dummy(si);
@@ -520,7 +520,7 @@ int soundio_dummy_init(struct SoundIoPrivate *si) {
             return SoundIoErrorNoMem;
         }
 
-        int err;
+        int err = 0;
         if ((err = set_all_device_channel_layouts(device))) {
             soundio_device_unref(device);
             destroy_dummy(si);

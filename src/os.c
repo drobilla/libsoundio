@@ -213,7 +213,7 @@ int soundio_os_thread_create(
         }
     }
 #else
-    int err;
+    int err = 0;
     if ((err = pthread_attr_init(&thread->attr))) {
         soundio_os_thread_destroy(thread);
         return SoundIoErrorNoMem;
@@ -293,7 +293,7 @@ struct SoundIoOsMutex *soundio_os_mutex_create(void) {
 #if defined(SOUNDIO_OS_WINDOWS)
     InitializeCriticalSection(&mutex->id);
 #else
-    int err;
+    int err = 0;
     if ((err = pthread_mutex_init(&mutex->id, NULL))) {
         soundio_os_mutex_destroy(mutex);
         return NULL;
@@ -485,7 +485,7 @@ void soundio_os_cond_timed_wait(struct SoundIoOsCond *cond,
     if (locked_mutex)
         assert_no_err(pthread_mutex_lock(&locked_mutex->id));
 #else
-    pthread_mutex_t *target_mutex;
+    pthread_mutex_t *target_mutex = NULL;
     if (locked_mutex) {
         target_mutex = &locked_mutex->id;
     } else {
@@ -498,7 +498,7 @@ void soundio_os_cond_timed_wait(struct SoundIoOsCond *cond,
     tms.tv_nsec += (seconds * 1000000000L);
     tms.tv_sec += tms.tv_nsec / 1000000000L;
     tms.tv_nsec = tms.tv_nsec % 1000000000L;
-    int err;
+    int err = 0;
     if ((err = pthread_cond_timedwait(&cond->id, target_mutex, &tms))) {
         assert(err != EPERM);
         assert(err != EINVAL);
@@ -542,14 +542,14 @@ void soundio_os_cond_wait(struct SoundIoOsCond *cond,
     if (locked_mutex)
         assert_no_err(pthread_mutex_lock(&locked_mutex->id));
 #else
-    pthread_mutex_t *target_mutex;
+    pthread_mutex_t *target_mutex = NULL;
     if (locked_mutex) {
         target_mutex = &locked_mutex->id;
     } else {
         target_mutex = &cond->default_mutex_id;
         assert_no_err(pthread_mutex_lock(&cond->default_mutex_id));
     }
-    int err;
+    int err = 0;
     if ((err = pthread_cond_wait(&cond->id, target_mutex))) {
         assert(err != EPERM);
         assert(err != EINVAL);
@@ -579,7 +579,7 @@ static int internal_init(void) {
 }
 
 int soundio_os_init(void) {
-    int err;
+    int err = 0;
 #if defined(SOUNDIO_OS_WINDOWS)
     PVOID lpContext;
     BOOL pending;
@@ -677,7 +677,7 @@ int soundio_os_init_mirrored_memory(struct SoundIoOsMirroredMemory *mem, size_t 
 #else
     char shm_path[] = "/dev/shm/soundio-XXXXXX";
     char tmp_path[] = "/tmp/soundio-XXXXXX";
-    char *chosen_path;
+    char *chosen_path = NULL;
 
     int fd = mkstemp(shm_path);
     if (fd < 0) {

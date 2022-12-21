@@ -61,8 +61,8 @@ static int min_int(int a, int b) {
 
 static void read_callback(struct SoundIoInStream *instream, int frame_count_min, int frame_count_max) {
     struct RecordContext *rc = (struct RecordContext*)instream->userdata;
-    struct SoundIoChannelArea *areas;
-    int err;
+    struct SoundIoChannelArea *areas = NULL;
+    int err = 0;
 
     char *write_ptr = soundio_ring_buffer_write_ptr(rc->ring_buffer);
     int free_bytes = soundio_ring_buffer_free_count(rc->ring_buffer);
@@ -226,7 +226,7 @@ int main(int argc, char **argv) {
     soundio_device_sort_channel_layouts(selected_device);
 
     int sample_rate = 0;
-    int *sample_rate_ptr;
+    int *sample_rate_ptr = NULL;
     for (sample_rate_ptr = prioritized_sample_rates; *sample_rate_ptr; sample_rate_ptr += 1) {
         if (soundio_device_supports_sample_rate(selected_device, *sample_rate_ptr)) {
             sample_rate = *sample_rate_ptr;
@@ -237,7 +237,7 @@ int main(int argc, char **argv) {
         sample_rate = selected_device->sample_rates[0].max;
 
     enum SoundIoFormat fmt = SoundIoFormatInvalid;
-    enum SoundIoFormat *fmt_ptr;
+    enum SoundIoFormat *fmt_ptr = NULL;
     for (fmt_ptr = prioritized_formats; *fmt_ptr != SoundIoFormatInvalid; fmt_ptr += 1) {
         if (soundio_device_supports_format(selected_device, *fmt_ptr)) {
             fmt = *fmt_ptr;

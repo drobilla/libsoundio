@@ -73,10 +73,10 @@ static bool caused_underflow = false;
 static int overflow_count = 0;
 
 static void read_callback(struct SoundIoInStream *instream, int frame_count_min, int frame_count_max) {
-    struct SoundIoChannelArea *areas;
+    struct SoundIoChannelArea *areas = NULL;
     float float_sample_rate = instream->sample_rate;
     float seconds_per_frame = 1.0f / float_sample_rate;
-    int err;
+    int err = 0;
 
     if (!caused_underflow && seconds_offset >= 3.0f) {
         fprintf(stderr, "OK sleeping...\n");
@@ -201,7 +201,7 @@ int main(int argc, char **argv) {
 
     fprintf(stderr, "Input device: %s\n", device->name);
 
-    enum SoundIoFormat *fmt;
+    enum SoundIoFormat *fmt = NULL;
     for (fmt = prioritized_formats; *fmt != SoundIoFormatInvalid; fmt += 1) {
         if (soundio_device_supports_format(device, *fmt))
             break;

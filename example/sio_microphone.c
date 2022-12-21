@@ -65,8 +65,8 @@ static int min_int(int a, int b) {
 }
 
 static void read_callback(struct SoundIoInStream *instream, int frame_count_min, int frame_count_max) {
-    struct SoundIoChannelArea *areas;
-    int err;
+    struct SoundIoChannelArea *areas = NULL;
+    int err = 0;
     char *write_ptr = soundio_ring_buffer_write_ptr(ring_buffer);
     int free_bytes = soundio_ring_buffer_free_count(ring_buffer);
     int free_count = free_bytes / instream->bytes_per_frame;
@@ -114,10 +114,10 @@ static void read_callback(struct SoundIoInStream *instream, int frame_count_min,
 }
 
 static void write_callback(struct SoundIoOutStream *outstream, int frame_count_min, int frame_count_max) {
-    struct SoundIoChannelArea *areas;
-    int frames_left;
-    int frame_count;
-    int err;
+    struct SoundIoChannelArea *areas = NULL;
+    int frames_left = 0;
+    int frame_count = 0;
+    int err = 0;
 
     char *read_ptr = soundio_ring_buffer_read_ptr(ring_buffer);
     int fill_bytes = soundio_ring_buffer_fill_count(ring_buffer);
@@ -314,7 +314,7 @@ int main(int argc, char **argv) {
     if (!layout)
         panic("channel layouts not compatible");
 
-    int *sample_rate;
+    int *sample_rate = NULL;
     for (sample_rate = prioritized_sample_rates; *sample_rate; sample_rate += 1) {
         if (soundio_device_supports_sample_rate(in_device, *sample_rate) &&
             soundio_device_supports_sample_rate(out_device, *sample_rate))
@@ -325,7 +325,7 @@ int main(int argc, char **argv) {
     if (!*sample_rate)
         panic("incompatible sample rates");
 
-    enum SoundIoFormat *fmt;
+    enum SoundIoFormat *fmt = NULL;
     for (fmt = prioritized_formats; *fmt != SoundIoFormatInvalid; fmt += 1) {
         if (soundio_device_supports_format(in_device, *fmt) &&
             soundio_device_supports_format(out_device, *fmt))

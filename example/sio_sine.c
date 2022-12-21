@@ -58,8 +58,8 @@ static volatile bool want_pause = false;
 static void write_callback(struct SoundIoOutStream *outstream, int frame_count_min, int frame_count_max) {
     double float_sample_rate = outstream->sample_rate;
     double seconds_per_frame = 1.0 / float_sample_rate;
-    struct SoundIoChannelArea *areas;
-    int err;
+    struct SoundIoChannelArea *areas = NULL;
+    int err = 0;
 
     int frames_left = frame_count_max;
 

@@ -15,19 +15,19 @@
 #include "util.h"
 
 #ifdef SOUNDIO_HAVE_ALSA
-#	include "alsa.h"
+#    include "alsa.h"
 #endif
 #ifdef SOUNDIO_HAVE_COREAUDIO
-#	include "coreaudio.h"
+#    include "coreaudio.h"
 #endif
 #ifdef SOUNDIO_HAVE_JACK
-#	include "jack.h"
+#    include "jack.h"
 #endif
 #ifdef SOUNDIO_HAVE_PULSEAUDIO
-#	include "pulseaudio.h"
+#    include "pulseaudio.h"
 #endif
 #ifdef SOUNDIO_HAVE_WASAPI
-#	include "wasapi.h"
+#    include "wasapi.h"
 #endif
 
 #include <assert.h>
@@ -209,7 +209,7 @@ static void default_emit_rtprio_warning(void) {
 }
 
 struct SoundIo *soundio_create(void) {
-    int err;
+    int err = 0;
     if ((err = soundio_os_init()))
         return NULL;
     struct SoundIoPrivate *si = ALLOCATE(struct SoundIoPrivate, 1);
@@ -255,7 +255,7 @@ int soundio_connect_backend(struct SoundIo *soundio, enum SoundIoBackend backend
     if (!fn)
         return SoundIoErrorBackendUnavailable;
 
-    int err;
+    int err = 0;
     if ((err = backend_init_fns[backend](si))) {
         soundio_disconnect(soundio);
         return err;

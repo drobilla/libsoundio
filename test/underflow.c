@@ -82,8 +82,8 @@ static double seconds_end = 9.0f;
 static void write_callback(struct SoundIoOutStream *outstream, int frame_count_min, int frame_count_max) {
     double float_sample_rate = outstream->sample_rate;
     double seconds_per_frame = 1.0 / float_sample_rate;
-    struct SoundIoChannelArea *areas;
-    int err;
+    struct SoundIoChannelArea *areas = NULL;
+    int err = 0;
 
     if (!caused_underflow && seconds_offset >= 3.0) {
         caused_underflow = true;

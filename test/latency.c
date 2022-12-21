@@ -56,8 +56,8 @@ static double seconds_offset = 0.0;
 static struct SoundIoRingBuffer pulse_rb;
 
 static void write_time(struct SoundIoOutStream *outstream, double extra) {
-    double latency;
-    int err;
+    double latency = NAN;
+    int err = 0;
     if ((err = soundio_outstream_get_latency(outstream, &latency))) {
         soundio_panic("getting latency: %s", soundio_strerror(err));
     }
@@ -71,8 +71,8 @@ static void write_time(struct SoundIoOutStream *outstream, double extra) {
 static void write_callback(struct SoundIoOutStream *outstream, int frame_count_min, int frame_count_max) {
     double float_sample_rate = outstream->sample_rate;
     double seconds_per_frame = 1.0f / float_sample_rate;
-    struct SoundIoChannelArea *areas;
-    int err;
+    struct SoundIoChannelArea *areas = NULL;
+    int err = 0;
 
     int frames_left = frame_count_max;
 
@@ -90,7 +90,7 @@ static void write_callback(struct SoundIoOutStream *outstream, int frame_count_m
         double pitch = 440.0;
         double radians_per_second = pitch * 2.0 * PI;
         for (int frame = 0; frame < frame_count; frame += 1) {
-            double sample;
+            double sample = NAN;
             if (frames_until_pulse <= 0) {
                 if (pulse_frames_left == -1) {
                     pulse_frames_left = 0.25 * float_sample_rate;
@@ -165,7 +165,7 @@ int main(int argc, char **argv) {
         }
     }
 
-    struct SoundIo *soundio;
+    struct SoundIo *soundio = NULL;
     if (!(soundio = soundio_create()))
         soundio_panic("out of memory");
 

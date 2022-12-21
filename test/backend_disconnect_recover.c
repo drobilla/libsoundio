@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
         }
     }
 
-    struct SoundIo *soundio;
+    struct SoundIo *soundio = NULL;
     if (!(soundio = soundio_create()))
         panic("out of memory");
 

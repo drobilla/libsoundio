@@ -70,12 +70,6 @@ if cc.get_id() == 'clang'
     ]
   endif
 
-  if host_machine.system() == 'darwin'
-    c_suppressions += [
-      '-Wno-conditional-uninitialized',
-    ]
-  endif
-
 elif cc.get_id() == 'gcc'
   if warning_level == 'everything'
     c_suppressions += [

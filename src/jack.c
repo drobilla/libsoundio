@@ -74,7 +74,7 @@ static struct SoundIoJackClient *find_or_create_client(struct SoundIoListJackCli
             return client;
         }
     }
-    int err;
+    int err = 0;
     if ((err = SoundIoListJackClient_add_one(clients)))
         return NULL;
     struct SoundIoJackClient *client = SoundIoListJackClient_last_ptr(clients);
@@ -142,8 +142,8 @@ static int refresh_devices_bare(struct SoundIoPrivate *si) {
 
         const char *client_name = NULL;
         const char *port_name = NULL;
-        int client_name_len;
-        int port_name_len;
+        int client_name_len = 0;
+        int port_name_len = 0;
         split_str(client_and_port_name, client_and_port_name_len, ':',
                 &client_name, &client_name_len, &port_name, &port_name_len);
         if (!client_name || !port_name) {
@@ -272,7 +272,7 @@ static int refresh_devices_bare(struct SoundIoPrivate *si) {
         device->formats = &dev->prealloc_format;
         device->formats[0] = device->current_format;
 
-        struct SoundIoListDevicePtr *device_list;
+        struct SoundIoListDevicePtr *device_list = NULL;
         if (device->aim == SoundIoDeviceAimOutput) {
             device_list = &devices_info->output_devices;
             if (devices_info->default_output_index < 0 && client->is_physical)
@@ -309,7 +309,7 @@ static int refresh_devices(struct SoundIoPrivate *si) {
 static void my_flush_events(struct SoundIoPrivate *si, bool wait) {
     struct SoundIo *soundio = &si->pub;
     struct SoundIoJack *sij = &si->backend_data.jack;
-    int err;
+    int err = 0;
 
     bool cb_shutdown = false;
 
@@ -455,7 +455,7 @@ static int outstream_open_jack(struct SoundIoPrivate *si, struct SoundIoOutStrea
     outstream->software_latency = device->software_latency_current;
     osj->period_size = sij->period_size;
 
-    jack_status_t status;
+    jack_status_t status = JackFailure;
     osj->client = jack_client_open(outstream->name, JackNoStartServer, &status);
     if (!osj->client) {
         outstream_destroy_jack(si, os);
@@ -467,7 +467,7 @@ static int outstream_open_jack(struct SoundIoPrivate *si, struct SoundIoOutStrea
         return SoundIoErrorOpeningDevice;
     }
 
-    int err;
+    int err = 0;
     if ((err = jack_set_process_callback(osj->client, outstream_process_callback, os))) {
         outstream_destroy_jack(si, os);
         return SoundIoErrorOpeningDevice;
@@ -547,7 +547,7 @@ static int outstream_start_jack(struct SoundIoPrivate *si, struct SoundIoOutStre
     struct SoundIoOutStreamJack *osj = &os->backend_data.jack;
     struct SoundIoOutStream *outstream = &os->pub;
     struct SoundIoJack *sij = &si->backend_data.jack;
-    int err;
+    int err = 0;
 
     if (sij->is_shutdown)
         return SoundIoErrorBackendDisconnected;
@@ -676,7 +676,7 @@ static int instream_open_jack(struct SoundIoPrivate *si, struct SoundIoInStreamP
     instream->software_latency = device->software_latency_current;
     isj->period_size = sij->period_size;
 
-    jack_status_t status;
+    jack_status_t status = JackFailure;
     isj->client = jack_client_open(instream->name, JackNoStartServer, &status);
     if (!isj->client) {
         instream_destroy_jack(si, is);
@@ -688,7 +688,7 @@ static int instream_open_jack(struct SoundIoPrivate *si, struct SoundIoInStreamP
         return SoundIoErrorOpeningDevice;
     }
 
-    int err;
+    int err = 0;
     if ((err = jack_set_process_callback(isj->client, instream_process_callback, is))) {
         instream_destroy_jack(si, is);
         return SoundIoErrorOpeningDevice;
@@ -767,7 +767,7 @@ static int instream_start_jack(struct SoundIoPrivate *si, struct SoundIoInStream
     struct SoundIoInStreamJack *isj = &is->backend_data.jack;
     struct SoundIoInStream *instream = &is->pub;
     struct SoundIoJack *sij = &si->backend_data.jack;
-    int err;
+    int err = 0;
 
     if (sij->is_shutdown)
         return SoundIoErrorBackendDisconnected;
@@ -904,7 +904,7 @@ int soundio_jack_init(struct SoundIoPrivate *si) {
 
     // We pass JackNoStartServer due to
     // https://github.com/jackaudio/jack2/issues/138
-    jack_status_t status;
+    jack_status_t status = JackFailure;
     sij->client = jack_client_open(soundio->app_name, JackNoStartServer, &status);
     if (!sij->client) {
         destroy_jack(si);
@@ -917,7 +917,7 @@ int soundio_jack_init(struct SoundIoPrivate *si) {
         return SoundIoErrorInitAudioBackend;
     }
 
-    int err;
+    int err = 0;
     if ((err = jack_set_buffer_size_callback(sij->client, buffer_size_callback, si))) {
         destroy_jack(si);
         return SoundIoErrorInitAudioBackend;
