@@ -5,14 +5,15 @@
  * See http://opensource.org/licenses/MIT
  */
 
+#include "config.h"
+#include "os.h"
 #include "soundio_private.h"
 #include "util.h"
-#include "os.h"
-#include "config.h"
 
-#include <string.h>
 #include <assert.h>
+#include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
 static const enum SoundIoBackend available_backends[] = {
 #ifdef SOUNDIO_HAVE_JACK

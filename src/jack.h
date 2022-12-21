@@ -8,9 +8,9 @@
 #ifndef SOUNDIO_JACK_H
 #define SOUNDIO_JACK_H
 
-#include "soundio_internal.h"
-#include "os.h"
 #include "atomics.h"
+#include "os.h"
+#include "soundio_internal.h"
 
 // jack.h does not properly put `void` in function prototypes with no
 // arguments, so we're forced to temporarily disable -Werror=strict-prototypes

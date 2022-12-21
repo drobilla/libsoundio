@@ -1,14 +1,14 @@
 #undef NDEBUG
 
-#include "soundio_private.h"
-#include "os.h"
-#include "util.h"
 #include "atomics.h"
+#include "os.h"
+#include "soundio_private.h"
+#include "util.h"
 
-#include <stdio.h>
-#include <string.h>
 #include <assert.h>
 #include <limits.h>
+#include <stdio.h>
+#include <string.h>
 
 static inline void ok_or_panic(int err) {
     if (err)

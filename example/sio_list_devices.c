@@ -7,9 +7,9 @@
 
 #include <soundio/soundio.h>
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#include <stdbool.h>
 
 // list or keep a watch on audio devices
 

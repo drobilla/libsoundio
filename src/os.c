@@ -16,11 +16,11 @@
 #include "soundio_internal.h"
 #include "util.h"
 
-#include <stdlib.h>
-#include <time.h>
 #include <assert.h>
-#include <string.h>
 #include <errno.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
 #if defined(_WIN32)
 #define SOUNDIO_OS_WINDOWS
@@ -58,8 +58,8 @@
 #else
 
 #include <pthread.h>
-#include <unistd.h>
 #include <sys/mman.h>
+#include <unistd.h>
 #if !defined(MAP_ANONYMOUS) && defined(MAP_ANON)
 #define MAP_ANONYMOUS MAP_ANON
 #endif

@@ -9,8 +9,8 @@
 #include "alsa.h"
 #include "soundio_private.h"
 
-#include <sys/inotify.h>
 #include <fcntl.h>
+#include <sys/inotify.h>
 #include <unistd.h>
 
 static snd_pcm_stream_t stream_types[] = {SND_PCM_STREAM_PLAYBACK, SND_PCM_STREAM_CAPTURE};

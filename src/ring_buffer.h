@@ -8,8 +8,8 @@
 #ifndef SOUNDIO_RING_BUFFER_H
 #define SOUNDIO_RING_BUFFER_H
 
-#include "os.h"
 #include "atomics.h"
+#include "os.h"
 
 struct SoundIoRingBuffer {
     struct SoundIoOsMirroredMemory mem;

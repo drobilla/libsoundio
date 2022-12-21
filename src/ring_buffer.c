@@ -6,6 +6,7 @@
  */
 
 #include "ring_buffer.h"
+
 #include "soundio_private.h"
 #include "util.h"
 

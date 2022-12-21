@@ -9,6 +9,7 @@
 #define SOUNDIO_SOUNDIO_H
 
 #include "endian.h"
+
 #include <stdbool.h>
 
 /// \cond

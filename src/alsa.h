@@ -8,10 +8,10 @@
 #ifndef SOUNDIO_ALSA_H
 #define SOUNDIO_ALSA_H
 
-#include "soundio_internal.h"
-#include "os.h"
-#include "list.h"
 #include "atomics.h"
+#include "list.h"
+#include "os.h"
+#include "soundio_internal.h"
 
 #include <alsa/asoundlib.h>
 

@@ -8,8 +8,8 @@
 #ifndef SOUNDIO_LIST_H
 #define SOUNDIO_LIST_H
 
-#include "util.h"
 #include "soundio_internal.h"
+#include "util.h"
 
 #include <assert.h>
 

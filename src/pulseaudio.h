@@ -8,8 +8,8 @@
 #ifndef SOUNDIO_PULSEAUDIO_H
 #define SOUNDIO_PULSEAUDIO_H
 
-#include "soundio_internal.h"
 #include "atomics.h"
+#include "soundio_internal.h"
 
 #include <pulse/pulseaudio.h>
 

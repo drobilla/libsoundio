@@ -8,21 +8,23 @@
 #ifndef SOUNDIO_WASAPI_H
 #define SOUNDIO_WASAPI_H
 
-#include "soundio_internal.h"
-#include "os.h"
-#include "list.h"
 #include "atomics.h"
+#include "list.h"
+#include "os.h"
+#include "soundio_internal.h"
 
 #define CINTERFACE
 #define COBJMACROS
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
+
 #include <windows.h>
-#include <mmdeviceapi.h>
+
 #include <audioclient.h>
-#include <audiosessiontypes.h>
 #include <audiopolicy.h>
+#include <audiosessiontypes.h>
+#include <mmdeviceapi.h>
 
 #ifndef AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM
 #define AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM 0x80000000

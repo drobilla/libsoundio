@@ -7,11 +7,11 @@
 
 #include <soundio/soundio.h>
 
+#include <errno.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
-#include <errno.h>
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -20,7 +20,6 @@
 #else
 #include <unistd.h>
 #endif
-
 
 struct RecordContext {
     struct SoundIoRingBuffer *ring_buffer;

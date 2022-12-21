@@ -6,8 +6,8 @@
  */
 
 #include "jack.h"
-#include "soundio_private.h"
 #include "list.h"
+#include "soundio_private.h"
 
 #include <stdio.h>
 

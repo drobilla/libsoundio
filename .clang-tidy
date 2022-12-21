@@ -13,7 +13,6 @@ Checks: >
   -bugprone-easily-swappable-parameters,
   -cppcoreguidelines-avoid-non-const-global-variables,
   -cppcoreguidelines-init-variables,
-  -llvm-include-order,
   -llvmlibc-*,
   -misc-unused-parameters,
   -modernize-macro-to-enum,

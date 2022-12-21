@@ -8,13 +8,13 @@
 #ifndef SOUNDIO_COREAUDIO_H
 #define SOUNDIO_COREAUDIO_H
 
-#include "soundio_internal.h"
-#include "os.h"
-#include "list.h"
 #include "atomics.h"
+#include "list.h"
+#include "os.h"
+#include "soundio_internal.h"
 
-#include <CoreAudio/CoreAudio.h>
 #include <AudioUnit/AudioUnit.h>
+#include <CoreAudio/CoreAudio.h>
 
 struct SoundIoPrivate;
 int soundio_coreaudio_init(struct SoundIoPrivate *si);

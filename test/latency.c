@@ -5,15 +5,15 @@
  * See http://opensource.org/licenses/MIT
  */
 
-#include "soundio_private.h"
 #include "os.h"
+#include "soundio_private.h"
 #include "util.h"
 
+#include <math.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
-#include <stdint.h>
 
 static int usage(char *exe) {
     fprintf(stderr, "Usage: %s [--backend dummy|alsa|pulseaudio|jack|coreaudio|wasapi] [--latency seconds]\n", exe);

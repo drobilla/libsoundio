@@ -8,10 +8,10 @@
 #ifndef SOUNDIO_UTIL_H
 #define SOUNDIO_UTIL_H
 
-#include <stdlib.h>
-#include <string.h>
 #include <assert.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define ALLOCATE_NONZERO(Type, count) ((Type*)malloc((count) * sizeof(Type)))
 
