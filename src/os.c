@@ -690,9 +690,9 @@ int soundio_os_init_mirrored_memory(struct SoundIoOsMirroredMemory *mem, size_t 
         fd = mkstemp(tmp_path);
         if (fd < 0) {
             return SoundIoErrorSystemResources;
-        } else {
-            chosen_path = tmp_path;
         }
+
+        chosen_path = tmp_path;
     } else {
         chosen_path = shm_path;
     }

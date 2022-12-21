@@ -811,11 +811,13 @@ static int compare_layouts(const void *a, const void *b) {
     const struct SoundIoChannelLayout *layout_b = (const struct SoundIoChannelLayout *)b;
     if (layout_a->channel_count > layout_b->channel_count) {
         return -1;
-    } else if (layout_a->channel_count < layout_b->channel_count) {
-        return 1;
-    } else {
-        return 0;
     }
+
+    if (layout_a->channel_count < layout_b->channel_count) {
+        return 1;
+    }
+
+    return 0;
 }
 
 void soundio_sort_channel_layouts(struct SoundIoChannelLayout *layouts, int layouts_count) {

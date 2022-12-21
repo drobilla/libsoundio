@@ -154,7 +154,9 @@ int main(int argc, char **argv) {
                 i += 1;
                 if (i >= argc) {
                     return usage(exe);
-                } else if (strcmp(arg, "--backend") == 0) {
+                }
+
+                if (strcmp(arg, "--backend") == 0) {
                     if (strcmp(argv[i], "dummy") == 0) {
                         backend = SoundIoBackendDummy;
                     } else if (strcmp(argv[i], "alsa") == 0) {

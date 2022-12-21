@@ -421,10 +421,10 @@ static int outstream_buffer_size_callback(jack_nframes_t nframes, void *arg) {
     struct SoundIoOutStream *outstream = &os->pub;
     if ((jack_nframes_t)osj->period_size == nframes) {
         return 0;
-    } else {
-        outstream->error_callback(outstream, SoundIoErrorStreaming);
-        return -1;
     }
+
+    outstream->error_callback(outstream, SoundIoErrorStreaming);
+    return -1;
 }
 
 static int outstream_sample_rate_callback(jack_nframes_t nframes, void *arg) {
@@ -432,10 +432,10 @@ static int outstream_sample_rate_callback(jack_nframes_t nframes, void *arg) {
     struct SoundIoOutStream *outstream = &os->pub;
     if (nframes == (jack_nframes_t)outstream->sample_rate) {
         return 0;
-    } else {
-        outstream->error_callback(outstream, SoundIoErrorStreaming);
-        return -1;
     }
+
+    outstream->error_callback(outstream, SoundIoErrorStreaming);
+    return -1;
 }
 
 static void outstream_shutdown_callback(void *arg) {
@@ -644,10 +644,10 @@ static int instream_buffer_size_callback(jack_nframes_t nframes, void *arg) {
 
     if ((jack_nframes_t)isj->period_size == nframes) {
         return 0;
-    } else {
-        instream->error_callback(instream, SoundIoErrorStreaming);
-        return -1;
     }
+
+    instream->error_callback(instream, SoundIoErrorStreaming);
+    return -1;
 }
 
 static int instream_sample_rate_callback(jack_nframes_t nframes, void *arg) {
@@ -655,10 +655,10 @@ static int instream_sample_rate_callback(jack_nframes_t nframes, void *arg) {
     struct SoundIoInStream *instream = &is->pub;
     if (nframes == (jack_nframes_t)instream->sample_rate) {
         return 0;
-    } else {
-        instream->error_callback(instream, SoundIoErrorStreaming);
-        return -1;
     }
+
+    instream->error_callback(instream, SoundIoErrorStreaming);
+    return -1;
 }
 
 static void instream_shutdown_callback(void *arg) {

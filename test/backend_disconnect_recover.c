@@ -61,7 +61,9 @@ int main(int argc, char **argv) {
             i += 1;
             if (i >= argc) {
                 return usage(exe);
-            } else if (strcmp(arg, "--timeout") == 0) {
+            }
+
+            if (strcmp(arg, "--timeout") == 0) {
                 timeout = atoi(argv[i]);
             } else if (strcmp(arg, "--backend") == 0) {
                 if (strcmp("-dummy", argv[i]) == 0) {

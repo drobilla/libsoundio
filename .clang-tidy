@@ -3,7 +3,6 @@
 
 Checks: >
   *,
-  -*-else-after-return,
   -*-magic-numbers,
   -*-narrowing-conversions,
   -altera-*,

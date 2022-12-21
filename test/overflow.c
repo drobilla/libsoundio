@@ -243,8 +243,8 @@ int main(int argc, char **argv) {
     if (overflow_count > 0) {
         fprintf(stderr, "OK test passed with %d overflow callbacks\n", overflow_count);
         return 0;
-    } else {
-        fprintf(stderr, "FAIL no overflow callbacks received\n");
-        return 1;
     }
+
+    fprintf(stderr, "FAIL no overflow callbacks received\n");
+    return 1;
 }

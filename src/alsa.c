@@ -718,10 +718,10 @@ static int refresh_devices(struct SoundIoPrivate *si) {
         if ((err = snd_ctl_open(&handle, name, 0)) < 0) {
             if (err == -ENOENT) {
                 break;
-            } else {
-                soundio_destroy_devices_info(devices_info);
-                return SoundIoErrorOpeningDevice;
             }
+
+            soundio_destroy_devices_info(devices_info);
+            return SoundIoErrorOpeningDevice;
         }
 
         if ((err = snd_ctl_card_info(handle, card_info)) < 0) {
@@ -752,11 +752,11 @@ static int refresh_devices(struct SoundIoPrivate *si) {
                 if ((err = snd_ctl_pcm_info(handle, pcm_info)) < 0) {
                     if (err == -ENOENT) {
                         continue;
-                    } else {
-                        snd_ctl_close(handle);
-                        soundio_destroy_devices_info(devices_info);
-                        return SoundIoErrorSystemResources;
                     }
+
+                    snd_ctl_close(handle);
+                    soundio_destroy_devices_info(devices_info);
+                    return SoundIoErrorSystemResources;
                 }
 
                 const char *device_name = snd_pcm_info_get_name(pcm_info);
@@ -2004,10 +2004,10 @@ int soundio_alsa_init(struct SoundIoPrivate *si) {
         destroy_alsa(si);
         if (err == EMFILE || err == ENFILE) {
             return SoundIoErrorSystemResources;
-        } else {
-            assert(err == ENOMEM);
-            return SoundIoErrorNoMem;
         }
+
+        assert(err == ENOMEM);
+        return SoundIoErrorNoMem;
     }
 
     sia->notify_wd = inotify_add_watch(sia->notify_fd, "/dev/snd", IN_CREATE | IN_CLOSE_WRITE | IN_DELETE);
@@ -2021,12 +2021,14 @@ int soundio_alsa_init(struct SoundIoPrivate *si) {
         destroy_alsa(si);
         if (err == ENOSPC) {
             return SoundIoErrorSystemResources;
-        } else if (err == ENOMEM) {
-            return SoundIoErrorNoMem;
-        } else {
-            // Kernel must not have ALSA support.
-            return SoundIoErrorInitAudioBackend;
         }
+
+        if (err == ENOMEM) {
+            return SoundIoErrorNoMem;
+        }
+
+        // Kernel must not have ALSA support.
+        return SoundIoErrorInitAudioBackend;
     }
 
     if (pipe2(sia->notify_pipe_fd, O_NONBLOCK)) {
