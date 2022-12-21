@@ -1,0 +1,26 @@
+# Copyright 2022 David Robillard <d@drobilla.net>
+# SPDX-License-Identifier: 0BSD OR MIT
+
+option('alsa', type: 'feature', value: 'auto',
+       description: 'Enable ALSA backend')
+
+option('coreaudio', type: 'feature', value: 'auto',
+       description: 'Enable CoreAudio backend')
+
+option('docs', type: 'feature', value: 'auto', yield: true,
+       description: 'Build documentation')
+
+option('examples', type: 'feature', value: 'auto', yield: true,
+       description: 'Build example programs')
+
+option('jack', type: 'feature', value: 'auto',
+       description: 'Enable JACK backend')
+
+option('pulseaudio', type: 'feature', value: 'auto',
+       description: 'Enable PulseAudio backend')
+
+option('tests', type: 'feature', value: 'auto', yield: true,
+       description: 'Build tests')
+
+option('wasapi', type: 'feature', value: 'auto',
+       description: 'Enable WASAPI backend')
