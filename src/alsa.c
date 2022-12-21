@@ -6,12 +6,26 @@
  */
 
 #define _GNU_SOURCE
+
 #include "alsa.h"
+
+#include "os.h"
 #include "soundio_private.h"
+#include "util.h"
+
+#include <alsa/conf.h>
+#include <alsa/control.h>
 
 #include <fcntl.h>
+#include <poll.h>
 #include <sys/inotify.h>
 #include <unistd.h>
+
+#include <assert.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 static snd_pcm_stream_t stream_types[] = {SND_PCM_STREAM_PLAYBACK, SND_PCM_STREAM_CAPTURE};
 

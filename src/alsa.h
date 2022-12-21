@@ -10,10 +10,11 @@
 
 #include "atomics.h"
 #include "list.h"
-#include "os.h"
 #include "soundio_internal.h"
 
-#include <alsa/asoundlib.h>
+#include <alsa/asoundlib.h> // IWYU pragma: keep
+
+#include <stdbool.h>
 
 struct SoundIoPrivate;
 int soundio_alsa_init(struct SoundIoPrivate *si);

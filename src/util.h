@@ -8,7 +8,6 @@
 #ifndef SOUNDIO_UTIL_H
 #define SOUNDIO_UTIL_H
 
-#include <assert.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>

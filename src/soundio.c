@@ -5,14 +5,35 @@
  * See http://opensource.org/licenses/MIT
  */
 
-#include "config.h"
-#include "os.h"
 #include "soundio_private.h"
+
+#include "atomics.h"
+#include "config.h"
+#include "dummy.h"
+#include "list.h"
+#include "os.h"
 #include "util.h"
+
+#ifdef SOUNDIO_HAVE_ALSA
+#	include "alsa.h"
+#endif
+#ifdef SOUNDIO_HAVE_COREAUDIO
+#	include "coreaudio.h"
+#endif
+#ifdef SOUNDIO_HAVE_JACK
+#	include "jack.h"
+#endif
+#ifdef SOUNDIO_HAVE_PULSEAUDIO
+#	include "pulseaudio.h"
+#endif
+#ifdef SOUNDIO_HAVE_WASAPI
+#	include "wasapi.h"
+#endif
 
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 static const enum SoundIoBackend available_backends[] = {

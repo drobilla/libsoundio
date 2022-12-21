@@ -9,15 +9,11 @@
 #define SOUNDIO_JACK_H
 
 #include "atomics.h"
-#include "os.h"
 #include "soundio_internal.h"
 
-// jack.h does not properly put `void` in function prototypes with no
-// arguments, so we're forced to temporarily disable -Werror=strict-prototypes
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wstrict-prototypes"
-#include <jack/jack.h>
-#pragma GCC diagnostic pop
+#include <jack/types.h>
+
+#include <stdbool.h>
 
 struct SoundIoPrivate;
 int soundio_jack_init(struct SoundIoPrivate *si);

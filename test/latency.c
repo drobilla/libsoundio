@@ -6,10 +6,12 @@
  */
 
 #include "os.h"
+#include "ring_buffer.h"
 #include "soundio_private.h"
 #include "util.h"
 
 #include <math.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>

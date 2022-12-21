@@ -6,6 +6,7 @@
  */
 
 #include "coreaudio.h"
+
 #include "soundio_private.h"
 
 #include <assert.h>

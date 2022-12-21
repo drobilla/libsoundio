@@ -10,7 +10,7 @@
 
 #include "config.h"
 #include "list.h"
-#include "soundio_internal.h"
+#include "soundio_internal.h" // IWYU pragma: export
 
 #ifdef SOUNDIO_HAVE_JACK
 #include "jack.h"

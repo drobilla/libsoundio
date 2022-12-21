@@ -18,8 +18,8 @@
 
 #include <assert.h>
 #include <errno.h>
+#include <stdbool.h>
 #include <stdlib.h>
-#include <string.h>
 #include <time.h>
 
 #if defined(_WIN32)
@@ -58,6 +58,7 @@
 #else
 
 #include <pthread.h>
+#include <sched.h>
 #include <sys/mman.h>
 #include <unistd.h>
 #if !defined(MAP_ANONYMOUS) && defined(MAP_ANON)

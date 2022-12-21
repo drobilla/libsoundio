@@ -7,9 +7,10 @@
 
 #include "ring_buffer.h"
 
-#include "soundio_private.h"
+#include "soundio_internal.h"
 #include "util.h"
 
+#include <assert.h>
 #include <stdlib.h>
 
 struct SoundIoRingBuffer *soundio_ring_buffer_create(struct SoundIo *soundio, int requested_capacity) {

@@ -6,8 +6,12 @@
  */
 
 #include "dummy.h"
-#include "soundio_private.h"
 
+#include "os.h"
+#include "soundio_private.h"
+#include "util.h"
+
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 

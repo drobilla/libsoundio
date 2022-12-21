@@ -11,6 +11,6 @@
 // This exists for __declspec(dllexport) and __declspec(dllimport) to be
 // defined correctly without the library user having to do anything.
 #define SOUNDIO_BUILDING_LIBRARY
-#include "soundio/soundio.h"
+#include "soundio/soundio.h" // IWYU pragma: export
 
 #endif

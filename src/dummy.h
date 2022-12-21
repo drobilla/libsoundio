@@ -9,9 +9,10 @@
 #define SOUNDIO_DUMMY_H
 
 #include "atomics.h"
-#include "os.h"
 #include "ring_buffer.h"
 #include "soundio_internal.h"
+
+#include <stdbool.h>
 
 struct SoundIoPrivate;
 int soundio_dummy_init(struct SoundIoPrivate *si);

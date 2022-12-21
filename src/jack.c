@@ -6,10 +6,23 @@
  */
 
 #include "jack.h"
-#include "list.h"
-#include "soundio_private.h"
 
+#include "list.h"
+#include "os.h"
+#include "soundio_private.h"
+#include "util.h"
+
+// jack.h does not properly put `void` in function prototypes with no
+// arguments, so we're forced to temporarily disable -Werror=strict-prototypes
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstrict-prototypes"
+#include <jack/jack.h>
+#pragma GCC diagnostic pop
+
+#include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 static struct SoundIoAtomicFlag global_msg_callback_flag = SOUNDIO_ATOMIC_FLAG_INIT;
 

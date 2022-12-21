@@ -8,7 +8,6 @@
 #ifndef SOUNDIO_OS_H
 #define SOUNDIO_OS_H
 
-#include <stdbool.h>
 #include <stddef.h>
 
 // safe to call from any thread(s) multiple times, but

@@ -6,8 +6,12 @@
  */
 
 #include "soundio_private.h"
+#include "util.h"
 
+#include <assert.h>
+#include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
 static struct SoundIoChannelLayout builtin_channel_layouts[] = {
     {

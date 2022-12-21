@@ -5,11 +5,12 @@
  * See http://opensource.org/licenses/MIT
  */
 
+#include "util.h"
+
+#include <assert.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "util.h"
 
 void soundio_panic(const char *format, ...) {
     va_list ap;
