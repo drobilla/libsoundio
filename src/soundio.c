@@ -210,11 +210,13 @@ static void default_emit_rtprio_warning(void) {
 
 struct SoundIo *soundio_create(void) {
     int err = 0;
-    if ((err = soundio_os_init()))
+    if ((err = soundio_os_init())) {
         return NULL;
+    }
     struct SoundIoPrivate *si = ALLOCATE(struct SoundIoPrivate, 1);
-    if (!si)
+    if (!si) {
         return NULL;
+    }
     struct SoundIo *soundio = &si->pub;
     soundio->on_devices_change = do_nothing_cb;
     soundio->on_backend_disconnect = default_backend_disconnect_cb;
@@ -232,10 +234,12 @@ int soundio_connect(struct SoundIo *soundio) {
     for (int i = 0; i < ARRAY_LENGTH(available_backends); i += 1) {
         enum SoundIoBackend backend = available_backends[i];
         err = soundio_connect_backend(soundio, backend);
-        if (!err)
+        if (!err) {
             return 0;
-        if (err != SoundIoErrorInitAudioBackend)
+        }
+        if (err != SoundIoErrorInitAudioBackend) {
             return err;
+        }
     }
 
     return err;
@@ -244,16 +248,19 @@ int soundio_connect(struct SoundIo *soundio) {
 int soundio_connect_backend(struct SoundIo *soundio, enum SoundIoBackend backend) {
     struct SoundIoPrivate *si = (struct SoundIoPrivate *)soundio;
 
-    if (soundio->current_backend)
+    if (soundio->current_backend) {
         return SoundIoErrorInvalid;
+    }
 
-    if (backend <= 0 || backend > SoundIoBackendDummy)
+    if (backend <= 0 || backend > SoundIoBackendDummy) {
         return SoundIoErrorInvalid;
+    }
 
     int (*fn)(struct SoundIoPrivate *) = backend_init_fns[backend];
 
-    if (!fn)
+    if (!fn) {
         return SoundIoErrorBackendUnavailable;
+    }
 
     int err = 0;
     if ((err = backend_init_fns[backend](si))) {
@@ -268,11 +275,13 @@ int soundio_connect_backend(struct SoundIo *soundio, enum SoundIoBackend backend
 void soundio_disconnect(struct SoundIo *soundio) {
     struct SoundIoPrivate *si = (struct SoundIoPrivate *)soundio;
 
-    if (!si)
+    if (!si) {
         return;
+    }
 
-    if (si->destroy)
+    if (si->destroy) {
         si->destroy(si);
+    }
     memset(&si->backend_data, 0, sizeof(union SoundIoBackendData));
 
     soundio->current_backend = SoundIoBackendNone;
@@ -315,12 +324,14 @@ int soundio_input_device_count(struct SoundIo *soundio) {
     struct SoundIoPrivate *si = (struct SoundIoPrivate *)soundio;
 
     assert(si->safe_devices_info);
-    if (!si->safe_devices_info)
+    if (!si->safe_devices_info) {
         return -1;
+    }
 
     assert(soundio->current_backend != SoundIoBackendNone);
-    if (soundio->current_backend == SoundIoBackendNone)
+    if (soundio->current_backend == SoundIoBackendNone) {
         return -1;
+    }
 
     return si->safe_devices_info->input_devices.length;
 }
@@ -329,12 +340,14 @@ int soundio_output_device_count(struct SoundIo *soundio) {
     struct SoundIoPrivate *si = (struct SoundIoPrivate *)soundio;
 
     assert(si->safe_devices_info);
-    if (!si->safe_devices_info)
+    if (!si->safe_devices_info) {
         return -1;
+    }
 
     assert(soundio->current_backend != SoundIoBackendNone);
-    if (soundio->current_backend == SoundIoBackendNone)
+    if (soundio->current_backend == SoundIoBackendNone) {
         return -1;
+    }
 
     return si->safe_devices_info->output_devices.length;
 }
@@ -343,12 +356,14 @@ int soundio_default_input_device_index(struct SoundIo *soundio) {
     struct SoundIoPrivate *si = (struct SoundIoPrivate *)soundio;
 
     assert(si->safe_devices_info);
-    if (!si->safe_devices_info)
+    if (!si->safe_devices_info) {
         return -1;
+    }
 
     assert(soundio->current_backend != SoundIoBackendNone);
-    if (soundio->current_backend == SoundIoBackendNone)
+    if (soundio->current_backend == SoundIoBackendNone) {
         return -1;
+    }
 
     return si->safe_devices_info->default_input_index;
 }
@@ -357,12 +372,14 @@ int soundio_default_output_device_index(struct SoundIo *soundio) {
     struct SoundIoPrivate *si = (struct SoundIoPrivate *)soundio;
 
     assert(si->safe_devices_info);
-    if (!si->safe_devices_info)
+    if (!si->safe_devices_info) {
         return -1;
+    }
 
     assert(soundio->current_backend != SoundIoBackendNone);
-    if (soundio->current_backend == SoundIoBackendNone)
+    if (soundio->current_backend == SoundIoBackendNone) {
         return -1;
+    }
 
     return si->safe_devices_info->default_output_index;
 }
@@ -371,17 +388,20 @@ struct SoundIoDevice *soundio_get_input_device(struct SoundIo *soundio, int inde
     struct SoundIoPrivate *si = (struct SoundIoPrivate *)soundio;
 
     assert(soundio->current_backend != SoundIoBackendNone);
-    if (soundio->current_backend == SoundIoBackendNone)
+    if (soundio->current_backend == SoundIoBackendNone) {
         return NULL;
+    }
 
     assert(si->safe_devices_info);
-    if (!si->safe_devices_info)
+    if (!si->safe_devices_info) {
         return NULL;
+    }
 
     assert(index >= 0);
     assert(index < si->safe_devices_info->input_devices.length);
-    if (index < 0 || index >= si->safe_devices_info->input_devices.length)
+    if (index < 0 || index >= si->safe_devices_info->input_devices.length) {
         return NULL;
+    }
 
     struct SoundIoDevice *device = SoundIoListDevicePtr_val_at(&si->safe_devices_info->input_devices, index);
     soundio_device_ref(device);
@@ -392,17 +412,20 @@ struct SoundIoDevice *soundio_get_output_device(struct SoundIo *soundio, int ind
     struct SoundIoPrivate *si = (struct SoundIoPrivate *)soundio;
 
     assert(soundio->current_backend != SoundIoBackendNone);
-    if (soundio->current_backend == SoundIoBackendNone)
+    if (soundio->current_backend == SoundIoBackendNone) {
         return NULL;
+    }
 
     assert(si->safe_devices_info);
-    if (!si->safe_devices_info)
+    if (!si->safe_devices_info) {
         return NULL;
+    }
 
     assert(index >= 0);
     assert(index < si->safe_devices_info->output_devices.length);
-    if (index < 0 || index >= si->safe_devices_info->output_devices.length)
+    if (index < 0 || index >= si->safe_devices_info->output_devices.length) {
         return NULL;
+    }
 
     struct SoundIoDevice *device = SoundIoListDevicePtr_val_at(&si->safe_devices_info->output_devices, index);
     soundio_device_ref(device);
@@ -410,16 +433,18 @@ struct SoundIoDevice *soundio_get_output_device(struct SoundIo *soundio, int ind
 }
 
 void soundio_device_unref(struct SoundIoDevice *device) {
-    if (!device)
+    if (!device) {
         return;
+    }
 
     device->ref_count -= 1;
     assert(device->ref_count >= 0);
 
     if (device->ref_count == 0) {
         struct SoundIoDevicePrivate *dev = (struct SoundIoDevicePrivate *)device;
-        if (dev->destruct)
+        if (dev->destruct) {
             dev->destruct(dev);
+        }
 
         free(device->id);
         free(device->name);
@@ -431,11 +456,13 @@ void soundio_device_unref(struct SoundIoDevice *device) {
         }
         SoundIoListSampleRateRange_deinit(&dev->sample_rates);
 
-        if (device->formats != &dev->prealloc_format)
+        if (device->formats != &dev->prealloc_format) {
             free(device->formats);
+        }
 
-        if (device->layouts != &device->current_layout)
+        if (device->layouts != &device->current_layout) {
             free(device->layouts);
+        }
 
         free(dev);
     }
@@ -467,8 +494,10 @@ int soundio_outstream_begin_write(struct SoundIoOutStream *outstream,
     struct SoundIo *soundio = outstream->device->soundio;
     struct SoundIoPrivate *si = (struct SoundIoPrivate *)soundio;
     struct SoundIoOutStreamPrivate *os = (struct SoundIoOutStreamPrivate *)outstream;
-    if (*frame_count <= 0)
+    if (*frame_count <= 0) {
         return SoundIoErrorInvalid;
+    }
+
     return si->outstream_begin_write(si, os, areas, frame_count);
 }
 
@@ -489,10 +518,12 @@ struct SoundIoOutStream *soundio_outstream_create(struct SoundIoDevice *device) 
     struct SoundIoOutStreamPrivate *os = ALLOCATE(struct SoundIoOutStreamPrivate, 1);
     struct SoundIoOutStream *outstream = &os->pub;
 
-    if (!os)
+    if (!os) {
         return NULL;
-    if (!device)
+    }
+    if (!device) {
         return NULL;
+    }
 
     outstream->device = device;
     soundio_device_ref(device);
@@ -506,30 +537,35 @@ struct SoundIoOutStream *soundio_outstream_create(struct SoundIoDevice *device) 
 int soundio_outstream_open(struct SoundIoOutStream *outstream) {
     struct SoundIoDevice *device = outstream->device;
 
-    if (device->aim != SoundIoDeviceAimOutput)
+    if (device->aim != SoundIoDeviceAimOutput) {
         return SoundIoErrorInvalid;
+    }
 
-    if (device->probe_error)
+    if (device->probe_error) {
         return device->probe_error;
+    }
 
-    if (outstream->layout.channel_count > SOUNDIO_MAX_CHANNELS)
+    if (outstream->layout.channel_count > SOUNDIO_MAX_CHANNELS) {
         return SoundIoErrorInvalid;
+    }
 
     if (outstream->format == SoundIoFormatInvalid) {
         outstream->format = soundio_device_supports_format(device, SoundIoFormatFloat32NE) ?
             SoundIoFormatFloat32NE : device->formats[0];
     }
 
-    if (outstream->format <= SoundIoFormatInvalid)
+    if (outstream->format <= SoundIoFormatInvalid) {
         return SoundIoErrorInvalid;
+    }
 
     if (!outstream->layout.channel_count) {
         const struct SoundIoChannelLayout *stereo = soundio_channel_layout_get_builtin(SoundIoChannelLayoutIdStereo);
         outstream->layout = soundio_device_supports_layout(device, stereo) ? *stereo : device->layouts[0];
     }
 
-    if (!outstream->sample_rate)
+    if (!outstream->sample_rate) {
         outstream->sample_rate = soundio_device_nearest_sample_rate(device, 48000);
+    }
 
     struct SoundIoOutStreamPrivate *os = (struct SoundIoOutStreamPrivate *)outstream;
     outstream->bytes_per_frame = soundio_get_bytes_per_frame(outstream->format, outstream->layout.channel_count);
@@ -541,15 +577,17 @@ int soundio_outstream_open(struct SoundIoOutStream *outstream) {
 }
 
 void soundio_outstream_destroy(struct SoundIoOutStream *outstream) {
-    if (!outstream)
+    if (!outstream) {
         return;
+    }
 
     struct SoundIoOutStreamPrivate *os = (struct SoundIoOutStreamPrivate *)outstream;
     struct SoundIo *soundio = outstream->device->soundio;
     struct SoundIoPrivate *si = (struct SoundIoPrivate *)soundio;
 
-    if (si->outstream_destroy)
+    if (si->outstream_destroy) {
         si->outstream_destroy(si, os);
+    }
 
     soundio_device_unref(outstream->device);
     free(os);
@@ -600,10 +638,13 @@ struct SoundIoInStream *soundio_instream_create(struct SoundIoDevice *device) {
     struct SoundIoInStreamPrivate *is = ALLOCATE(struct SoundIoInStreamPrivate, 1);
     struct SoundIoInStream *instream = &is->pub;
 
-    if (!is)
+    if (!is) {
         return NULL;
-    if (!device)
+    }
+
+    if (!device) {
         return NULL;
+    }
 
     instream->device = device;
     soundio_device_ref(device);
@@ -616,17 +657,21 @@ struct SoundIoInStream *soundio_instream_create(struct SoundIoDevice *device) {
 
 int soundio_instream_open(struct SoundIoInStream *instream) {
     struct SoundIoDevice *device = instream->device;
-    if (device->aim != SoundIoDeviceAimInput)
+    if (device->aim != SoundIoDeviceAimInput) {
         return SoundIoErrorInvalid;
+    }
 
-    if (instream->format <= SoundIoFormatInvalid)
+    if (instream->format <= SoundIoFormatInvalid) {
         return SoundIoErrorInvalid;
+    }
 
-    if (instream->layout.channel_count > SOUNDIO_MAX_CHANNELS)
+    if (instream->layout.channel_count > SOUNDIO_MAX_CHANNELS) {
         return SoundIoErrorInvalid;
+    }
 
-    if (device->probe_error)
+    if (device->probe_error) {
         return device->probe_error;
+    }
 
     if (instream->format == SoundIoFormatInvalid) {
         instream->format = soundio_device_supports_format(device, SoundIoFormatFloat32NE) ?
@@ -638,9 +683,9 @@ int soundio_instream_open(struct SoundIoInStream *instream) {
         instream->layout = soundio_device_supports_layout(device, stereo) ? *stereo : device->layouts[0];
     }
 
-    if (!instream->sample_rate)
+    if (!instream->sample_rate) {
         instream->sample_rate = soundio_device_nearest_sample_rate(device, 48000);
-
+    }
 
     instream->bytes_per_frame = soundio_get_bytes_per_frame(instream->format, instream->layout.channel_count);
     instream->bytes_per_sample = soundio_get_bytes_per_sample(instream->format);
@@ -658,15 +703,17 @@ int soundio_instream_start(struct SoundIoInStream *instream) {
 }
 
 void soundio_instream_destroy(struct SoundIoInStream *instream) {
-    if (!instream)
+    if (!instream) {
         return;
+    }
 
     struct SoundIoInStreamPrivate *is = (struct SoundIoInStreamPrivate *)instream;
     struct SoundIo *soundio = instream->device->soundio;
     struct SoundIoPrivate *si = (struct SoundIoPrivate *)soundio;
 
-    if (si->instream_destroy)
+    if (si->instream_destroy) {
         si->instream_destroy(si, is);
+    }
 
     soundio_device_unref(instream->device);
     free(is);
@@ -703,13 +750,16 @@ int soundio_instream_get_latency(struct SoundIoInStream *instream, double *out_l
 }
 
 void soundio_destroy_devices_info(struct SoundIoDevicesInfo *devices_info) {
-    if (!devices_info)
+    if (!devices_info) {
         return;
+    }
 
-    for (int i = 0; i < devices_info->input_devices.length; i += 1)
+    for (int i = 0; i < devices_info->input_devices.length; i += 1) {
         soundio_device_unref(SoundIoListDevicePtr_val_at(&devices_info->input_devices, i));
-    for (int i = 0; i < devices_info->output_devices.length; i += 1)
+    }
+    for (int i = 0; i < devices_info->output_devices.length; i += 1) {
         soundio_device_unref(SoundIoListDevicePtr_val_at(&devices_info->output_devices, i));
+    }
 
     SoundIoListDevicePtr_deinit(&devices_info->input_devices);
     SoundIoListDevicePtr_deinit(&devices_info->output_devices);
@@ -736,8 +786,9 @@ static bool layout_contains(const struct SoundIoChannelLayout *available_layouts
 {
     for (int i = 0; i < available_layouts_count; i += 1) {
         const struct SoundIoChannelLayout *available_layout = &available_layouts[i];
-        if (soundio_channel_layout_equal(target_layout, available_layout))
+        if (soundio_channel_layout_equal(target_layout, available_layout)) {
             return true;
+        }
     }
     return false;
 }
@@ -748,8 +799,9 @@ const struct SoundIoChannelLayout *soundio_best_matching_channel_layout(
 {
     for (int i = 0; i < preferred_layouts_count; i += 1) {
         const struct SoundIoChannelLayout *preferred_layout = &preferred_layouts[i];
-        if (layout_contains(available_layouts, available_layouts_count, preferred_layout))
+        if (layout_contains(available_layouts, available_layouts_count, preferred_layout)) {
             return preferred_layout;
+        }
     }
     return NULL;
 }
@@ -757,17 +809,19 @@ const struct SoundIoChannelLayout *soundio_best_matching_channel_layout(
 static int compare_layouts(const void *a, const void *b) {
     const struct SoundIoChannelLayout *layout_a = (const struct SoundIoChannelLayout *)a;
     const struct SoundIoChannelLayout *layout_b = (const struct SoundIoChannelLayout *)b;
-    if (layout_a->channel_count > layout_b->channel_count)
+    if (layout_a->channel_count > layout_b->channel_count) {
         return -1;
-    else if (layout_a->channel_count < layout_b->channel_count)
+    } else if (layout_a->channel_count < layout_b->channel_count) {
         return 1;
-    else
+    } else {
         return 0;
+    }
 }
 
 void soundio_sort_channel_layouts(struct SoundIoChannelLayout *layouts, int layouts_count) {
-    if (!layouts)
+    if (!layouts) {
         return;
+    }
 
     qsort(layouts, layouts_count, sizeof(struct SoundIoChannelLayout), compare_layouts);
 }
@@ -778,8 +832,9 @@ void soundio_device_sort_channel_layouts(struct SoundIoDevice *device) {
 
 bool soundio_device_supports_format(struct SoundIoDevice *device, enum SoundIoFormat format) {
     for (int i = 0; i < device->format_count; i += 1) {
-        if (device->formats[i] == format)
+        if (device->formats[i] == format) {
             return true;
+        }
     }
     return false;
 }
@@ -788,8 +843,9 @@ bool soundio_device_supports_layout(struct SoundIoDevice *device,
         const struct SoundIoChannelLayout *layout)
 {
     for (int i = 0; i < device->layout_count; i += 1) {
-        if (soundio_channel_layout_equal(&device->layouts[i], layout))
+        if (soundio_channel_layout_equal(&device->layouts[i], layout)) {
             return true;
+        }
     }
     return false;
 }
@@ -797,8 +853,9 @@ bool soundio_device_supports_layout(struct SoundIoDevice *device,
 bool soundio_device_supports_sample_rate(struct SoundIoDevice *device, int sample_rate) {
     for (int i = 0; i < device->sample_rate_count; i += 1) {
         struct SoundIoSampleRateRange *range = &device->sample_rates[i];
-        if (sample_rate >= range->min && sample_rate <= range->max)
+        if (sample_rate >= range->min && sample_rate <= range->max) {
             return true;
+        }
     }
     return false;
 }
@@ -814,8 +871,9 @@ int soundio_device_nearest_sample_rate(struct SoundIoDevice *device, int sample_
     for (int i = 0; i < device->sample_rate_count; i += 1) {
         struct SoundIoSampleRateRange *range = &device->sample_rates[i];
         int candidate_rate = soundio_int_clamp(range->min, sample_rate, range->max);
-        if (candidate_rate == sample_rate)
+        if (candidate_rate == sample_rate) {
             return candidate_rate;
+        }
 
         int delta = abs_diff_int(candidate_rate, sample_rate);
         bool best_rate_too_small = best_rate < sample_rate;

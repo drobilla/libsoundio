@@ -99,11 +99,13 @@ static void write_callback(struct SoundIoOutStream *outstream, int frame_count_m
 
     for (;;) {
         int frame_count = frames_left;
-        if ((err = soundio_outstream_begin_write(outstream, &areas, &frame_count)))
+        if ((err = soundio_outstream_begin_write(outstream, &areas, &frame_count))) {
             panic("%s", soundio_strerror(err));
+        }
 
-        if (!frame_count)
+        if (!frame_count) {
             break;
+        }
 
         const struct SoundIoChannelLayout *layout = &outstream->layout;
 
@@ -119,14 +121,16 @@ static void write_callback(struct SoundIoOutStream *outstream, int frame_count_m
         seconds_offset += seconds_per_frame * frame_count;
 
         if ((err = soundio_outstream_end_write(outstream))) {
-            if (err == SoundIoErrorUnderflow)
+            if (err == SoundIoErrorUnderflow) {
                 return;
+            }
             panic("%s", soundio_strerror(err));
         }
 
         frames_left -= frame_count;
-        if (frames_left <= 0)
+        if (frames_left <= 0) {
             break;
+        }
     }
 }
 
@@ -185,14 +189,16 @@ int main(int argc, char **argv) {
                     "wave for 3 seconds, then the program should exit successfully.\n"
                     "WASAPI does not report buffer underflows.\n");
 
-    if (!(soundio = soundio_create()))
+    if (!(soundio = soundio_create())) {
         panic("out of memory");
+    }
 
     int err = (backend == SoundIoBackendNone) ?
         soundio_connect(soundio) : soundio_connect_backend(soundio, backend);
 
-    if (err)
+    if (err) {
         panic("error connecting: %s", soundio_strerror(err));
+    }
 
     soundio_flush_events(soundio);
 
@@ -210,12 +216,14 @@ int main(int argc, char **argv) {
         selected_device_index = soundio_default_output_device_index(soundio);
     }
 
-    if (selected_device_index < 0)
+    if (selected_device_index < 0) {
         panic("Output device not found");
+    }
 
     struct SoundIoDevice *device = soundio_get_output_device(soundio, selected_device_index);
-    if (!device)
+    if (!device) {
         panic("out of memory");
+    }
 
     fprintf(stderr, "Output device: %s\n", device->name);
 
@@ -242,17 +250,21 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    if ((err = soundio_outstream_open(outstream)))
+    if ((err = soundio_outstream_open(outstream))) {
         panic("unable to open device: %s", soundio_strerror(err));
+    }
 
-    if (outstream->layout_error)
+    if (outstream->layout_error) {
         fprintf(stderr, "unable to set channel layout: %s\n", soundio_strerror(outstream->layout_error));
+    }
 
-    if ((err = soundio_outstream_start(outstream)))
+    if ((err = soundio_outstream_start(outstream))) {
         panic("unable to start device: %s", soundio_strerror(err));
+    }
 
-    while (seconds_offset < seconds_end)
+    while (seconds_offset < seconds_end) {
         soundio_wait_events(soundio);
+    }
 
     soundio_outstream_destroy(outstream);
     soundio_device_unref(device);

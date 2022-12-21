@@ -84,8 +84,9 @@ static void read_callback(struct SoundIoInStream *instream, int frame_count_min,
             exit(1);
         }
 
-        if (!frame_count)
+        if (!frame_count) {
             break;
+        }
 
         if (!areas) {
             // Due to an overflow there is a hole. Fill the ring buffer with
@@ -107,8 +108,9 @@ static void read_callback(struct SoundIoInStream *instream, int frame_count_min,
         }
 
         frames_left -= frame_count;
-        if (frames_left <= 0)
+        if (frames_left <= 0) {
             break;
+        }
     }
 
     int advance_bytes = write_frames * instream->bytes_per_frame;
@@ -172,8 +174,9 @@ int main(int argc, char **argv) {
         }
     }
 
-    if (!outfile)
+    if (!outfile) {
         return usage(exe);
+    }
 
     struct RecordContext rc;
 
@@ -233,8 +236,9 @@ int main(int argc, char **argv) {
             break;
         }
     }
-    if (!sample_rate)
+    if (!sample_rate) {
         sample_rate = selected_device->sample_rates[0].max;
+    }
 
     enum SoundIoFormat fmt = SoundIoFormatInvalid;
     enum SoundIoFormat *fmt_ptr = NULL;
@@ -244,8 +248,9 @@ int main(int argc, char **argv) {
             break;
         }
     }
-    if (fmt == SoundIoFormatInvalid)
+    if (fmt == SoundIoFormatInvalid) {
         fmt = selected_device->formats[0];
+    }
 
     FILE *out_f = fopen(outfile, "wb");
     if (!out_f) {

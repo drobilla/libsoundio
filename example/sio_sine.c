@@ -70,8 +70,9 @@ static void write_callback(struct SoundIoOutStream *outstream, int frame_count_m
             exit(1);
         }
 
-        if (!frame_count)
+        if (!frame_count) {
             break;
+        }
 
         const struct SoundIoChannelLayout *layout = &outstream->layout;
 
@@ -87,15 +88,18 @@ static void write_callback(struct SoundIoOutStream *outstream, int frame_count_m
         seconds_offset = fmod(seconds_offset + seconds_per_frame * frame_count, 1.0);
 
         if ((err = soundio_outstream_end_write(outstream))) {
-            if (err == SoundIoErrorUnderflow)
+            if (err == SoundIoErrorUnderflow) {
                 return;
+            }
+
             fprintf(stderr, "unrecoverable stream error: %s\n", soundio_strerror(err));
             exit(1);
         }
 
         frames_left -= frame_count;
-        if (frames_left <= 0)
+        if (frames_left <= 0) {
             break;
+        }
     }
 
     soundio_outstream_pause(outstream, want_pause);
@@ -251,8 +255,9 @@ int main(int argc, char **argv) {
             "'c\\n' - clear buffer\n"
             "'q\\n' - quit\n");
 
-    if (outstream->layout_error)
+    if (outstream->layout_error) {
         fprintf(stderr, "unable to set channel layout: %s\n", soundio_strerror(outstream->layout_error));
+    }
 
     if ((err = soundio_outstream_start(outstream))) {
         fprintf(stderr, "unable to start device: %s\n", soundio_strerror(err));

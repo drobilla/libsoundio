@@ -13,8 +13,9 @@
 #include <string.h>
 
 static inline void ok_or_panic(int err) {
-    if (err)
+    if (err) {
         soundio_panic("%s", soundio_strerror(err));
+    }
 }
 
 static void test_os_get_time(void) {
@@ -237,14 +238,16 @@ static void exec_test(struct Test *test) {
 int main(int argc, char *argv[]) {
     const char *match = NULL;
 
-    if (argc == 2)
+    if (argc == 2) {
         match = argv[1];
+    }
 
     struct Test *test = &tests[0];
 
     while (test->name) {
-        if (!match || strstr(test->name, match))
+        if (!match || strstr(test->name, match)) {
             exec_test(test);
+        }
         test += 1;
     }
 

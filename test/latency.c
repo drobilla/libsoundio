@@ -79,11 +79,13 @@ static void write_callback(struct SoundIoOutStream *outstream, int frame_count_m
     while (frames_left > 0) {
         int frame_count = frames_left;
 
-        if ((err = soundio_outstream_begin_write(outstream, &areas, &frame_count)))
+        if ((err = soundio_outstream_begin_write(outstream, &areas, &frame_count))) {
             soundio_panic("begin write: %s", soundio_strerror(err));
+        }
 
-        if (!frame_count)
+        if (!frame_count) {
             break;
+        }
 
         const struct SoundIoChannelLayout *layout = &outstream->layout;
 
@@ -117,8 +119,9 @@ static void write_callback(struct SoundIoOutStream *outstream, int frame_count_m
 
         seconds_offset += seconds_per_frame * frame_count;
 
-        if ((err = soundio_outstream_end_write(outstream)))
+        if ((err = soundio_outstream_end_write(outstream))) {
             soundio_panic("end write: %s", soundio_strerror(err));
+        }
 
         frames_left -= frame_count;
     }
@@ -166,24 +169,28 @@ int main(int argc, char **argv) {
     }
 
     struct SoundIo *soundio = NULL;
-    if (!(soundio = soundio_create()))
+    if (!(soundio = soundio_create())) {
         soundio_panic("out of memory");
+    }
 
     int err = (backend == SoundIoBackendNone) ?
         soundio_connect(soundio) : soundio_connect_backend(soundio, backend);
 
-    if (err)
+    if (err) {
         soundio_panic("error connecting: %s", soundio_strerror(err));
+    }
 
     soundio_flush_events(soundio);
 
     int default_out_device_index = soundio_default_output_device_index(soundio);
-    if (default_out_device_index < 0)
+    if (default_out_device_index < 0) {
         soundio_panic("no output device found");
+    }
 
     struct SoundIoDevice *device = soundio_get_output_device(soundio, default_out_device_index);
-    if (!device)
+    if (!device) {
         soundio_panic("out of memory");
+    }
 
     fprintf(stderr, "Output device: %s\n", device->name);
 
@@ -209,17 +216,21 @@ int main(int argc, char **argv) {
         soundio_panic("No suitable device format available.\n");
     }
 
-    if ((err = soundio_ring_buffer_init(&pulse_rb, 1024)))
+    if ((err = soundio_ring_buffer_init(&pulse_rb, 1024))) {
         soundio_panic("ring buffer init: %s", soundio_strerror(err));
+    }
 
-    if ((err = soundio_outstream_open(outstream)))
+    if ((err = soundio_outstream_open(outstream))) {
         soundio_panic("unable to open device: %s", soundio_strerror(err));
+    }
 
-    if (outstream->layout_error)
+    if (outstream->layout_error) {
         fprintf(stderr, "unable to set channel layout: %s\n", soundio_strerror(outstream->layout_error));
+    }
 
-    if ((err = soundio_outstream_start(outstream)))
+    if ((err = soundio_outstream_start(outstream))) {
         soundio_panic("unable to start device: %s", soundio_strerror(err));
+    }
 
     bool beep_on = true;
     int count = 0;
@@ -238,8 +249,9 @@ int main(int argc, char **argv) {
             }
             fflush(stderr);
             double off_by = soundio_os_get_time() - audible_time;
-            if (off_by > 0.0001)
+            if (off_by > 0.0001) {
                 fprintf(stderr, "off by %f\n", off_by);
+            }
             beep_on = !beep_on;
             soundio_ring_buffer_advance_read_ptr(&pulse_rb, sizeof(double));
         }

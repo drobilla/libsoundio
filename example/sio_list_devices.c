@@ -39,8 +39,10 @@ static void print_device(struct SoundIoDevice *device, bool is_default) {
     const char *default_str = is_default ? " (default)" : "";
     const char *raw_str = device->is_raw ? " (raw)" : "";
     fprintf(stderr, "%s%s%s\n", device->name, default_str, raw_str);
-    if (short_output)
+    if (short_output) {
         return;
+    }
+
     fprintf(stderr, "  id: %s\n", device->id);
 
     if (device->probe_error) {
@@ -64,21 +66,24 @@ static void print_device(struct SoundIoDevice *device, bool is_default) {
             fprintf(stderr, "    %d - %d\n", range->min, range->max);
 
         }
-        if (device->sample_rate_current)
+        if (device->sample_rate_current) {
             fprintf(stderr, "  current sample rate: %d\n", device->sample_rate_current);
+        }
         fprintf(stderr, "  formats: ");
         for (int i = 0; i < device->format_count; i += 1) {
             const char *comma = (i == device->format_count - 1) ? "" : ", ";
             fprintf(stderr, "%s%s", soundio_format_string(device->formats[i]), comma);
         }
         fprintf(stderr, "\n");
-        if (device->current_format != SoundIoFormatInvalid)
+        if (device->current_format != SoundIoFormatInvalid) {
             fprintf(stderr, "  current format: %s\n", soundio_format_string(device->current_format));
+        }
 
         fprintf(stderr, "  min software latency: %0.8f sec\n", device->software_latency_min);
         fprintf(stderr, "  max software latency: %0.8f sec\n", device->software_latency_max);
-        if (device->software_latency_current != 0.0)
+        if (device->software_latency_current != 0.0) {
             fprintf(stderr, "  current software latency: %0.8f sec\n", device->software_latency_current);
+        }
 
     }
     fprintf(stderr, "\n");

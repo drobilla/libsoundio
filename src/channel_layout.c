@@ -387,22 +387,25 @@ static channel_names_t channel_names[] = {
 };
 
 const char *soundio_get_channel_name(enum SoundIoChannelId id) {
-    if (id >= ARRAY_LENGTH(channel_names))
+    if (id >= ARRAY_LENGTH(channel_names)) {
         return "(Invalid Channel)";
-    else
-        return channel_names[id][0];
+    }
+
+    return channel_names[id][0];
 }
 
 bool soundio_channel_layout_equal(
         const struct SoundIoChannelLayout *a,
         const struct SoundIoChannelLayout *b)
 {
-    if (a->channel_count != b->channel_count)
+    if (a->channel_count != b->channel_count) {
         return false;
+    }
 
     for (int i = 0; i < a->channel_count; i += 1) {
-        if (a->channels[i] != b->channels[i])
+        if (a->channels[i] != b->channels[i]) {
             return false;
+        }
     }
 
     return true;
@@ -422,8 +425,9 @@ int soundio_channel_layout_find_channel(
         const struct SoundIoChannelLayout *layout, enum SoundIoChannelId channel)
 {
     for (int i = 0; i < layout->channel_count; i += 1) {
-        if (layout->channels[i] == channel)
+        if (layout->channels[i] == channel) {
             return i;
+        }
     }
     return -1;
 }
@@ -458,11 +462,14 @@ enum SoundIoChannelId soundio_parse_channel_id(const char *str, int str_len) {
     for (int id = 0; id < ARRAY_LENGTH(channel_names); id += 1) {
         for (int i = 0; i < CHANNEL_NAME_ALIAS_COUNT; i += 1) {
             const char *alias = channel_names[id][i];
-            if (!alias)
+            if (!alias) {
                 break;
+            }
+
             int alias_len = strlen(alias);
-            if (soundio_streql(alias, alias_len, str, str_len))
+            if (soundio_streql(alias, alias_len, str, str_len)) {
                 return (enum SoundIoChannelId)id;
+            }
         }
     }
     return SoundIoChannelIdInvalid;

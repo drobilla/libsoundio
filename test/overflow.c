@@ -94,20 +94,24 @@ static void read_callback(struct SoundIoInStream *instream, int frame_count_min,
     for (;;) {
         int frame_count = frames_left;
 
-        if ((err = soundio_instream_begin_read(instream, &areas, &frame_count)))
+        if ((err = soundio_instream_begin_read(instream, &areas, &frame_count))) {
             panic("begin read error: %s", soundio_strerror(err));
+        }
 
-        if (!frame_count)
+        if (!frame_count) {
             break;
+        }
 
         seconds_offset += seconds_per_frame * frame_count;
 
-        if ((err = soundio_instream_end_read(instream)))
+        if ((err = soundio_instream_end_read(instream))) {
             panic("end read error: %s", soundio_strerror(err));
+        }
 
         frames_left -= frame_count;
-        if (frames_left <= 0)
+        if (frames_left <= 0) {
             break;
+        }
     }
 
     fprintf(stderr, "OK received %d frames\n", frame_count_max);
@@ -163,14 +167,16 @@ int main(int argc, char **argv) {
             "CoreAudio is not expected to pass this test.\n"
             "WASAPI is not expected to pass this test.\n");
 
-    if (!(soundio = soundio_create()))
+    if (!(soundio = soundio_create())) {
         panic("out of memory");
+    }
 
     int err = (backend == SoundIoBackendNone) ?
         soundio_connect(soundio) : soundio_connect_backend(soundio, backend);
 
-    if (err)
+    if (err) {
         panic("error connecting: %s", soundio_strerror(err));
+    }
 
     soundio_flush_events(soundio);
 
@@ -203,27 +209,32 @@ int main(int argc, char **argv) {
 
     enum SoundIoFormat *fmt = NULL;
     for (fmt = prioritized_formats; *fmt != SoundIoFormatInvalid; fmt += 1) {
-        if (soundio_device_supports_format(device, *fmt))
+        if (soundio_device_supports_format(device, *fmt)) {
             break;
+        }
     }
-    if (*fmt == SoundIoFormatInvalid)
+    if (*fmt == SoundIoFormatInvalid) {
         panic("incompatible sample format");
+    }
 
     struct SoundIoInStream *instream = soundio_instream_create(device);
     instream->format = *fmt;
     instream->read_callback = read_callback;
     instream->overflow_callback = overflow_callback;
 
-    if ((err = soundio_instream_open(instream)))
+    if ((err = soundio_instream_open(instream))) {
         panic("unable to open device: %s", soundio_strerror(err));
+    }
 
     fprintf(stderr, "OK format: %s\n", soundio_format_string(instream->format));
 
-    if ((err = soundio_instream_start(instream)))
+    if ((err = soundio_instream_start(instream))) {
         panic("unable to start device: %s", soundio_strerror(err));
+    }
 
-    while (seconds_offset < seconds_end)
+    while (seconds_offset < seconds_end) {
         soundio_wait_events(soundio);
+    }
 
     soundio_instream_destroy(instream);
     soundio_device_unref(device);

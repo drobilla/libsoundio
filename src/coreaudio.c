@@ -174,17 +174,21 @@ static void destroy_ca(struct SoundIoPrivate *si) {
         soundio_os_thread_destroy(sica->thread);
     }
 
-    if (sica->cond)
+    if (sica->cond) {
         soundio_os_cond_destroy(sica->cond);
+    }
 
-    if (sica->have_devices_cond)
+    if (sica->have_devices_cond) {
         soundio_os_cond_destroy(sica->have_devices_cond);
+    }
 
-    if (sica->scan_devices_cond)
+    if (sica->scan_devices_cond) {
         soundio_os_cond_destroy(sica->scan_devices_cond);
+    }
 
-    if (sica->mutex)
+    if (sica->mutex) {
         soundio_os_mutex_destroy(sica->mutex);
+    }
 
     soundio_destroy_devices_info(sica->ready_devices_info);
 }
@@ -198,8 +202,9 @@ static int from_cf_string(CFStringRef string_ref, char **out_str, int *out_str_l
     CFIndex length = CFStringGetLength(string_ref);
     CFIndex max_size = CFStringGetMaximumSizeForEncoding(length, kCFStringEncodingUTF8) + 1;
     char *buf = ALLOCATE_NONZERO(char, max_size);
-    if (!buf)
+    if (!buf) {
         return SoundIoErrorNoMem;
+    }
 
     if (!CFStringGetCString(string_ref, buf, max_size, kCFStringEncodingUTF8)) {
         free(buf);
@@ -392,8 +397,9 @@ static int from_coreaudio_layout(const AudioChannelLayout *ca_layout, struct Sou
 
 static bool all_channels_invalid(const struct SoundIoChannelLayout *layout) {
     for (int i = 0; i < layout->channel_count; i += 1) {
-        if (layout->channels[i] != SoundIoChannelIdInvalid)
+        if (layout->channels[i] != SoundIoChannelIdInvalid) {
             return false;
+        }
     }
     return true;
 }
@@ -416,12 +422,14 @@ struct RefreshDevices {
 };
 
 static void deinit_refresh_devices(struct RefreshDevices *rd) {
-    if (!rd->ok)
+    if (!rd->ok) {
         unsubscribe_device_listeners(rd->si);
+    }
     soundio_destroy_devices_info(rd->devices_info);
     free(rd->devices);
-    if (rd->string_ref)
+    if (rd->string_ref) {
         CFRelease(rd->string_ref);
+    }
     free(rd->device_name);
     free(rd->buffer_list);
     soundio_device_unref(rd->device);
@@ -594,8 +602,9 @@ static int refresh_devices(struct SoundIoPrivate *si) {
                 channel_count += rd.buffer_list->mBuffers[i].mNumberChannels;
             }
 
-            if (channel_count <= 0)
+            if (channel_count <= 0) {
                 continue;
+            }
 
             struct SoundIoDevicePrivate *dev = ALLOCATE(struct SoundIoDevicePrivate, 1);
             if (!dev) {
@@ -642,8 +651,9 @@ static int refresh_devices(struct SoundIoPrivate *si) {
             if (all_channels_invalid(&rd.device->current_layout)) {
                 const struct SoundIoChannelLayout *guessed_layout =
                     soundio_channel_layout_get_default(channel_count);
-                if (guessed_layout)
+                if (guessed_layout) {
                     rd.device->current_layout = *guessed_layout;
+                }
             }
 
             rd.device->layout_count = 1;
@@ -651,8 +661,9 @@ static int refresh_devices(struct SoundIoPrivate *si) {
 
             rd.device->format_count = 4;
             rd.device->formats = ALLOCATE(enum SoundIoFormat, rd.device->format_count);
-            if (!rd.device->formats)
+            if (!rd.device->formats) {
                 return SoundIoErrorNoMem;
+            }
             rd.device->formats[0] = SoundIoFormatS16LE;
             rd.device->formats[1] = SoundIoFormatS32LE;
             rd.device->formats[2] = SoundIoFormatFloat32LE;
@@ -772,13 +783,15 @@ static int refresh_devices(struct SoundIoPrivate *si) {
             struct SoundIoListDevicePtr *device_list = NULL;
             if (rd.device->aim == SoundIoDeviceAimOutput) {
                 device_list = &rd.devices_info->output_devices;
-                if (device_id == default_output_id)
+                if (device_id == default_output_id) {
                     rd.devices_info->default_output_index = device_list->length;
+                }
             } else {
                 assert(rd.device->aim == SoundIoDeviceAimInput);
                 device_list = &rd.devices_info->input_devices;
-                if (device_id == default_input_id)
+                if (device_id == default_input_id) {
                     rd.devices_info->default_input_index = device_list->length;
+                }
             }
 
             if ((err = SoundIoListDevicePtr_append(device_list, rd.device))) {
@@ -818,8 +831,9 @@ static void flush_events_ca(struct SoundIoPrivate *si) {
     struct SoundIoCoreAudio *sica = &si->backend_data.coreaudio;
 
     // block until have devices
-    while (!SOUNDIO_ATOMIC_LOAD(sica->have_devices_flag))
+    while (!SOUNDIO_ATOMIC_LOAD(sica->have_devices_flag)) {
         soundio_os_cond_wait(sica->have_devices_cond, NULL);
+    }
 
     bool change = false;
     bool cb_shutdown = false;
@@ -839,10 +853,12 @@ static void flush_events_ca(struct SoundIoPrivate *si) {
 
     soundio_os_mutex_unlock(sica->mutex);
 
-    if (cb_shutdown)
+    if (cb_shutdown) {
         soundio->on_backend_disconnect(soundio, sica->shutdown_err);
-    else if (change)
+    }
+    else if (change) {
         soundio->on_devices_change(soundio);
+    }
 
     soundio_destroy_devices_info(old_devices_info);
 }
@@ -871,20 +887,25 @@ static void device_thread_run(void *arg) {
     int err = 0;
 
     for (;;) {
-        if (!SOUNDIO_ATOMIC_FLAG_TEST_AND_SET(sica->abort_flag))
+        if (!SOUNDIO_ATOMIC_FLAG_TEST_AND_SET(sica->abort_flag)) {
             break;
+        }
+
         if (SOUNDIO_ATOMIC_LOAD(sica->service_restarted)) {
             shutdown_backend(si, SoundIoErrorBackendDisconnected);
             return;
         }
+
         if (SOUNDIO_ATOMIC_EXCHANGE(sica->device_scan_queued, false)) {
             err = refresh_devices(si);
             if (err) {
                 shutdown_backend(si, err);
                 return;
             }
-            if (!SOUNDIO_ATOMIC_EXCHANGE(sica->have_devices_flag, true))
+
+            if (!SOUNDIO_ATOMIC_EXCHANGE(sica->have_devices_flag, true)) {
                 soundio_os_cond_signal(sica->have_devices_cond, NULL);
+            }
             soundio_os_cond_signal(sica->cond, NULL);
             soundio->on_events_signal(soundio);
         }
@@ -974,8 +995,9 @@ static int outstream_open_ca(struct SoundIoPrivate *si, struct SoundIoOutStreamP
     struct SoundIoDevicePrivate *dev = (struct SoundIoDevicePrivate *)device;
     struct SoundIoDeviceCoreAudio *dca = &dev->backend_data.coreaudio;
 
-    if (outstream->software_latency == 0.0)
+    if (outstream->software_latency == 0.0) {
         outstream->software_latency = device->software_latency_current;
+    }
 
     outstream->software_latency = soundio_double_clamp(
             device->software_latency_min,
@@ -1098,11 +1120,13 @@ static int outstream_begin_write_ca(struct SoundIoPrivate *si, struct SoundIoOut
     struct SoundIoOutStream *outstream = &os->pub;
     struct SoundIoOutStreamCoreAudio *osca = &os->backend_data.coreaudio;
 
-    if (osca->buffer_index >= osca->io_data->mNumberBuffers)
+    if (osca->buffer_index >= osca->io_data->mNumberBuffers) {
         return SoundIoErrorInvalid;
+    }
 
-    if (*frame_count != osca->frames_left)
+    if (*frame_count != osca->frames_left) {
         return SoundIoErrorInvalid;
+    }
 
     AudioBuffer *audio_buffer = &osca->io_data->mBuffers[osca->buffer_index];
     assert(audio_buffer->mNumberChannels == outstream->layout.channel_count);
@@ -1235,8 +1259,9 @@ static int instream_open_ca(struct SoundIoPrivate *si, struct SoundIoInStreamPri
     UInt32 io_size = 0;
     OSStatus os_err = 0;
 
-    if (instream->software_latency == 0.0)
+    if (instream->software_latency == 0.0) {
         instream->software_latency = device->software_latency_current;
+    }
 
     instream->software_latency = soundio_double_clamp(
             device->software_latency_min,
@@ -1395,8 +1420,9 @@ static int instream_begin_read_ca(struct SoundIoPrivate *si, struct SoundIoInStr
 {
     struct SoundIoInStreamCoreAudio *isca = &is->backend_data.coreaudio;
 
-    if (*frame_count != isca->frames_left)
+    if (*frame_count != isca->frames_left) {
         return SoundIoErrorInvalid;
+    }
 
     *out_areas = isca->areas;
 

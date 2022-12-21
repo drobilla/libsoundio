@@ -309,19 +309,25 @@ static enum SoundIoFormat from_wave_format_format(WAVEFORMATEXTENSIBLE *wave_for
 
     if (wave_format->Samples.wValidBitsPerSample == wave_format->Format.wBitsPerSample) {
         if (wave_format->Format.wBitsPerSample == 8) {
-            if (is_pcm)
+            if (is_pcm) {
                 return SoundIoFormatU8;
+            }
         } else if (wave_format->Format.wBitsPerSample == 16) {
-            if (is_pcm)
+            if (is_pcm) {
                 return SoundIoFormatS16LE;
+            }
         } else if (wave_format->Format.wBitsPerSample == 32) {
-            if (is_pcm)
+            if (is_pcm) {
                 return SoundIoFormatS32LE;
-            else if (is_float)
+            }
+
+            if (is_float) {
                 return SoundIoFormatFloat32LE;
+            }
         } else if (wave_format->Format.wBitsPerSample == 64) {
-            if (is_float)
+            if (is_float) {
                 return SoundIoFormatFloat64LE;
+            }
         }
     } else if (wave_format->Format.wBitsPerSample == 32 &&
             wave_format->Samples.wValidBitsPerSample == 24)

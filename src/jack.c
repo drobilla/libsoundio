@@ -75,8 +75,10 @@ static struct SoundIoJackClient *find_or_create_client(struct SoundIoListJackCli
         }
     }
     int err = 0;
-    if ((err = SoundIoListJackClient_add_one(clients)))
+    if ((err = SoundIoListJackClient_add_one(clients))) {
         return NULL;
+    }
+
     struct SoundIoJackClient *client = SoundIoListJackClient_last_ptr(clients);
     client->is_physical = is_physical;
     client->aim = aim;
@@ -99,13 +101,14 @@ static int refresh_devices_bare(struct SoundIoPrivate *si) {
     struct SoundIo *soundio = &si->pub;
     struct SoundIoJack *sij = &si->backend_data.jack;
 
-    if (sij->is_shutdown)
+    if (sij->is_shutdown) {
         return SoundIoErrorBackendDisconnected;
-
+    }
 
     struct SoundIoDevicesInfo *devices_info = ALLOCATE(struct SoundIoDevicesInfo, 1);
-    if (!devices_info)
+    if (!devices_info) {
         return SoundIoErrorNoMem;
+    }
 
     devices_info->default_output_index = -1;
     devices_info->default_input_index = -1;
@@ -175,8 +178,9 @@ static int refresh_devices_bare(struct SoundIoPrivate *si) {
 
     for (int i = 0; i < clients.length; i += 1) {
         struct SoundIoJackClient *client = SoundIoListJackClient_ptr_at(&clients, i);
-        if (client->port_count <= 0)
+        if (client->port_count <= 0) {
             continue;
+        }
 
         struct SoundIoDevicePrivate *dev = ALLOCATE(struct SoundIoDevicePrivate, 1);
         if (!dev) {
@@ -260,8 +264,9 @@ static int refresh_devices_bare(struct SoundIoPrivate *si) {
         }
         if (any_invalid) {
             const struct SoundIoChannelLayout *layout = soundio_channel_layout_get_default(client->port_count);
-            if (layout)
+            if (layout) {
                 device->current_layout = *layout;
+            }
         } else {
             soundio_channel_layout_detect_builtin(&device->current_layout);
         }
@@ -275,13 +280,15 @@ static int refresh_devices_bare(struct SoundIoPrivate *si) {
         struct SoundIoListDevicePtr *device_list = NULL;
         if (device->aim == SoundIoDeviceAimOutput) {
             device_list = &devices_info->output_devices;
-            if (devices_info->default_output_index < 0 && client->is_physical)
+            if (devices_info->default_output_index < 0 && client->is_physical) {
                 devices_info->default_output_index = device_list->length;
+            }
         } else {
             assert(device->aim == SoundIoDeviceAimInput);
             device_list = &devices_info->input_devices;
-            if (devices_info->default_input_index < 0 && client->is_physical)
+            if (devices_info->default_input_index < 0 && client->is_physical) {
                 devices_info->default_input_index = device_list->length;
+            }
         }
 
         if (SoundIoListDevicePtr_append(device_list, device)) {
@@ -301,8 +308,9 @@ static int refresh_devices_bare(struct SoundIoPrivate *si) {
 
 static int refresh_devices(struct SoundIoPrivate *si) {
     int err = SoundIoErrorInterrupted;
-    while (err == SoundIoErrorInterrupted)
+    while (err == SoundIoErrorInterrupted) {
         err = refresh_devices_bare(si);
+    }
     return err;
 }
 
@@ -315,8 +323,9 @@ static void my_flush_events(struct SoundIoPrivate *si, bool wait) {
 
     soundio_os_mutex_lock(sij->mutex);
 
-    if (wait)
+    if (wait) {
         soundio_os_cond_wait(sij->cond, sij->mutex);
+    }
 
     if (sij->is_shutdown && !sij->emitted_shutdown_cb) {
         sij->emitted_shutdown_cb = true;
@@ -391,8 +400,9 @@ static struct SoundIoDeviceJackPort *find_port_matching_channel(struct SoundIoDe
 
     for (int ch = 0; ch < device->current_layout.channel_count; ch += 1) {
         enum SoundIoChannelId chan_id = device->current_layout.channels[ch];
-        if (chan_id == id)
+        if (chan_id == id) {
             return &dj->ports[ch];
+        }
     }
 
     return NULL;
@@ -446,11 +456,13 @@ static int outstream_open_jack(struct SoundIoPrivate *si, struct SoundIoOutStrea
     struct SoundIoDevicePrivate *dev = (struct SoundIoDevicePrivate *)device;
     struct SoundIoDeviceJack *dj = &dev->backend_data.jack;
 
-    if (sij->is_shutdown)
+    if (sij->is_shutdown) {
         return SoundIoErrorBackendDisconnected;
+    }
 
-    if (!outstream->name)
+    if (!outstream->name) {
         outstream->name = "SoundIoOutStream";
+    }
 
     outstream->software_latency = device->software_latency_current;
     osj->period_size = sij->period_size;
@@ -460,10 +472,12 @@ static int outstream_open_jack(struct SoundIoPrivate *si, struct SoundIoOutStrea
     if (!osj->client) {
         outstream_destroy_jack(si, os);
         assert(!(status & JackInvalidOption));
-        if (status & JackShmFailure)
+        if (status & JackShmFailure) {
             return SoundIoErrorSystemResources;
-        if (status & JackNoSuchClient)
+        }
+        if (status & JackNoSuchClient) {
             return SoundIoErrorNoSuchClient;
+        }
         return SoundIoErrorOpeningDevice;
     }
 
@@ -495,8 +509,9 @@ static int outstream_open_jack(struct SoundIoPrivate *si, struct SoundIoOutStrea
         enum SoundIoChannelId my_channel_id = outstream->layout.channels[ch];
         const char *channel_name = soundio_get_channel_name(my_channel_id);
         unsigned long flags = JackPortIsOutput;
-        if (!outstream->non_terminal_hint)
+        if (!outstream->non_terminal_hint) {
             flags |= JackPortIsTerminal;
+        }
         jack_port_t *jport = jack_port_register(osj->client, channel_name, JACK_DEFAULT_AUDIO_TYPE, flags, 0);
         if (!jport) {
             outstream_destroy_jack(si, os);
@@ -537,8 +552,9 @@ static int outstream_open_jack(struct SoundIoPrivate *si, struct SoundIoOutStrea
 static int outstream_pause_jack(struct SoundIoPrivate *si, struct SoundIoOutStreamPrivate *os, bool pause) {
     struct SoundIoJack *sij = &si->backend_data.jack;
 
-    if (sij->is_shutdown)
+    if (sij->is_shutdown) {
         return SoundIoErrorBackendDisconnected;
+    }
 
     return SoundIoErrorIncompatibleBackend;
 }
@@ -549,21 +565,26 @@ static int outstream_start_jack(struct SoundIoPrivate *si, struct SoundIoOutStre
     struct SoundIoJack *sij = &si->backend_data.jack;
     int err = 0;
 
-    if (sij->is_shutdown)
+    if (sij->is_shutdown) {
         return SoundIoErrorBackendDisconnected;
+    }
 
-    if ((err = jack_activate(osj->client)))
+    if ((err = jack_activate(osj->client))) {
         return SoundIoErrorStreaming;
+    }
 
     for (int ch = 0; ch < outstream->layout.channel_count; ch += 1) {
         struct SoundIoOutStreamJackPort *osjp = &osj->ports[ch];
         const char *dest_port_name = osjp->dest_port_name;
         // allow unconnected ports
-        if (!dest_port_name)
+        if (!dest_port_name) {
             continue;
+        }
+
         const char *source_port_name = jack_port_name(osjp->source_port);
-        if ((err = jack_connect(osj->client, source_port_name, dest_port_name)))
+        if ((err = jack_connect(osj->client, source_port_name, dest_port_name))) {
             return SoundIoErrorStreaming;
+        }
     }
 
     return 0;
@@ -574,8 +595,9 @@ static int outstream_begin_write_jack(struct SoundIoPrivate *si, struct SoundIoO
 {
     struct SoundIoOutStreamJack *osj = &os->backend_data.jack;
 
-    if (*frame_count != osj->frames_left)
+    if (*frame_count != osj->frames_left) {
         return SoundIoErrorInvalid;
+    }
 
     *out_areas = osj->areas;
 
@@ -667,11 +689,13 @@ static int instream_open_jack(struct SoundIoPrivate *si, struct SoundIoInStreamP
     struct SoundIoDevicePrivate *dev = (struct SoundIoDevicePrivate *)device;
     struct SoundIoDeviceJack *dj = &dev->backend_data.jack;
 
-    if (sij->is_shutdown)
+    if (sij->is_shutdown) {
         return SoundIoErrorBackendDisconnected;
+    }
 
-    if (!instream->name)
+    if (!instream->name) {
         instream->name = "SoundIoInStream";
+    }
 
     instream->software_latency = device->software_latency_current;
     isj->period_size = sij->period_size;
@@ -681,10 +705,14 @@ static int instream_open_jack(struct SoundIoPrivate *si, struct SoundIoInStreamP
     if (!isj->client) {
         instream_destroy_jack(si, is);
         assert(!(status & JackInvalidOption));
-        if (status & JackShmFailure)
+        if (status & JackShmFailure) {
             return SoundIoErrorSystemResources;
-        if (status & JackNoSuchClient)
+        }
+
+        if (status & JackNoSuchClient) {
             return SoundIoErrorNoSuchClient;
+        }
+
         return SoundIoErrorOpeningDevice;
     }
 
@@ -715,8 +743,9 @@ static int instream_open_jack(struct SoundIoPrivate *si, struct SoundIoInStreamP
         enum SoundIoChannelId my_channel_id = instream->layout.channels[ch];
         const char *channel_name = soundio_get_channel_name(my_channel_id);
         unsigned long flags = JackPortIsInput;
-        if (!instream->non_terminal_hint)
+        if (!instream->non_terminal_hint) {
             flags |= JackPortIsTerminal;
+        }
         jack_port_t *jport = jack_port_register(isj->client, channel_name, JACK_DEFAULT_AUDIO_TYPE, flags, 0);
         if (!jport) {
             instream_destroy_jack(si, is);
@@ -757,8 +786,9 @@ static int instream_open_jack(struct SoundIoPrivate *si, struct SoundIoInStreamP
 static int instream_pause_jack(struct SoundIoPrivate *si, struct SoundIoInStreamPrivate *is, bool pause) {
     struct SoundIoJack *sij = &si->backend_data.jack;
 
-    if (sij->is_shutdown)
+    if (sij->is_shutdown) {
         return SoundIoErrorBackendDisconnected;
+    }
 
     return SoundIoErrorIncompatibleBackend;
 }
@@ -769,21 +799,26 @@ static int instream_start_jack(struct SoundIoPrivate *si, struct SoundIoInStream
     struct SoundIoJack *sij = &si->backend_data.jack;
     int err = 0;
 
-    if (sij->is_shutdown)
+    if (sij->is_shutdown) {
         return SoundIoErrorBackendDisconnected;
+    }
 
-    if ((err = jack_activate(isj->client)))
+    if ((err = jack_activate(isj->client))) {
         return SoundIoErrorStreaming;
+    }
 
     for (int ch = 0; ch < instream->layout.channel_count; ch += 1) {
         struct SoundIoInStreamJackPort *isjp = &isj->ports[ch];
         const char *source_port_name = isjp->source_port_name;
         // allow unconnected ports
-        if (!source_port_name)
+        if (!source_port_name) {
             continue;
+        }
+
         const char *dest_port_name = jack_port_name(isjp->dest_port);
-        if ((err = jack_connect(isj->client, source_port_name, dest_port_name)))
+        if ((err = jack_connect(isj->client, source_port_name, dest_port_name))) {
             return SoundIoErrorStreaming;
+        }
     }
 
     return 0;
@@ -794,8 +829,9 @@ static int instream_begin_read_jack(struct SoundIoPrivate *si, struct SoundIoInS
 {
     struct SoundIoInStreamJack *isj = &is->backend_data.jack;
 
-    if (*frame_count != isj->frames_left)
+    if (*frame_count != isj->frames_left) {
         return SoundIoErrorInvalid;
+    }
 
     *out_areas = isj->areas;
 
@@ -868,14 +904,17 @@ static void shutdown_callback(void *arg) {
 static void destroy_jack(struct SoundIoPrivate *si) {
     struct SoundIoJack *sij = &si->backend_data.jack;
 
-    if (sij->client)
+    if (sij->client) {
         jack_client_close(sij->client);
+    }
 
-    if (sij->cond)
+    if (sij->cond) {
         soundio_os_cond_destroy(sij->cond);
+    }
 
-    if (sij->mutex)
+    if (sij->mutex) {
         soundio_os_mutex_destroy(sij->mutex);
+    }
 }
 
 int soundio_jack_init(struct SoundIoPrivate *si) {
@@ -883,10 +922,12 @@ int soundio_jack_init(struct SoundIoPrivate *si) {
     struct SoundIo *soundio = &si->pub;
 
     if (!SOUNDIO_ATOMIC_FLAG_TEST_AND_SET(global_msg_callback_flag)) {
-        if (soundio->jack_error_callback)
+        if (soundio->jack_error_callback) {
             jack_set_error_function(soundio->jack_error_callback);
-        if (soundio->jack_info_callback)
+        }
+        if (soundio->jack_info_callback) {
             jack_set_info_function(soundio->jack_info_callback);
+        }
         SOUNDIO_ATOMIC_FLAG_CLEAR(global_msg_callback_flag);
     }
 
@@ -909,10 +950,13 @@ int soundio_jack_init(struct SoundIoPrivate *si) {
     if (!sij->client) {
         destroy_jack(si);
         assert(!(status & JackInvalidOption));
-        if (status & JackShmFailure)
+        if (status & JackShmFailure) {
             return SoundIoErrorSystemResources;
-        if (status & JackNoSuchClient)
+        }
+
+        if (status & JackNoSuchClient) {
             return SoundIoErrorNoSuchClient;
+        }
 
         return SoundIoErrorInitAudioBackend;
     }

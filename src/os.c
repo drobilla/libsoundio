@@ -219,7 +219,7 @@ int soundio_os_thread_create(
         return SoundIoErrorNoMem;
     }
     thread->attr_init = true;
-    
+
     if (emit_rtprio_warning) {
         int max_priority = sched_get_priority_max(SCHED_FIFO);
         if (max_priority == -1) {
@@ -259,8 +259,9 @@ int soundio_os_thread_create(
 }
 
 void soundio_os_thread_destroy(struct SoundIoOsThread *thread) {
-    if (!thread)
+    if (!thread) {
         return;
+    }
 
 #if defined(SOUNDIO_OS_WINDOWS)
     if (thread->handle) {
@@ -305,8 +306,9 @@ struct SoundIoOsMutex *soundio_os_mutex_create(void) {
 }
 
 void soundio_os_mutex_destroy(struct SoundIoOsMutex *mutex) {
-    if (!mutex)
+    if (!mutex) {
         return;
+    }
 
 #if defined(SOUNDIO_OS_WINDOWS)
     DeleteCriticalSection(&mutex->id);
@@ -379,8 +381,9 @@ struct SoundIoOsCond * soundio_os_cond_create(void) {
 }
 
 void soundio_os_cond_destroy(struct SoundIoOsCond *cond) {
-    if (!cond)
+    if (!cond) {
         return;
+    }
 
 #if defined(SOUNDIO_OS_WINDOWS)
     DeleteCriticalSection(&cond->default_cs_id);
@@ -503,8 +506,9 @@ void soundio_os_cond_timed_wait(struct SoundIoOsCond *cond,
         assert(err != EPERM);
         assert(err != EINVAL);
     }
-    if (!locked_mutex)
+    if (!locked_mutex) {
         assert_no_err(pthread_mutex_unlock(target_mutex));
+    }
 #endif
 }
 
@@ -554,8 +558,9 @@ void soundio_os_cond_wait(struct SoundIoOsCond *cond,
         assert(err != EPERM);
         assert(err != EINVAL);
     }
-    if (!locked_mutex)
+    if (!locked_mutex) {
         assert_no_err(pthread_mutex_unlock(&cond->default_mutex_id));
+    }
 #endif
 }
 
@@ -602,8 +607,9 @@ int soundio_os_init(void) {
         return 0;
     }
     initialized = true;
-    if ((err = internal_init()))
+    if ((err = internal_init())) {
         return err;
+    }
     assert_no_err(pthread_mutex_unlock(&init_mutex));
 #endif
 
@@ -725,8 +731,9 @@ int soundio_os_init_mirrored_memory(struct SoundIoOsMirroredMemory *mem, size_t 
 
     mem->address = address;
 
-    if (close(fd))
+    if (close(fd)) {
         return SoundIoErrorSystemResources;
+    }
 #endif
 
     mem->capacity = actual_capacity;
@@ -734,8 +741,10 @@ int soundio_os_init_mirrored_memory(struct SoundIoOsMirroredMemory *mem, size_t 
 }
 
 void soundio_os_deinit_mirrored_memory(struct SoundIoOsMirroredMemory *mem) {
-    if (!mem->address)
+    if (!mem->address) {
         return;
+    }
+
 #if defined(SOUNDIO_OS_WINDOWS)
     BOOL ok;
     ok = UnmapViewOfFile(mem->address);

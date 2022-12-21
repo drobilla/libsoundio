@@ -89,22 +89,25 @@ int main(int argc, char **argv) {
     }
 
     struct SoundIo *soundio = NULL;
-    if (!(soundio = soundio_create()))
+    if (!(soundio = soundio_create())) {
         panic("out of memory");
+    }
 
     int err = (backend == SoundIoBackendNone) ?
         soundio_connect(soundio) : soundio_connect_backend(soundio, backend);
 
-    if (err)
+    if (err) {
         panic("error connecting: %s", soundio_strerror(err));
+    }
 
     soundio->on_backend_disconnect = on_backend_disconnect;
 
     fprintf(stderr, "OK connected to %s. Now cause the backend to disconnect.\n",
             soundio_backend_name(soundio->current_backend));
 
-    while (!severed)
+    while (!severed) {
         soundio_wait_events(soundio);
+    }
 
     soundio_disconnect(soundio);
 
@@ -118,8 +121,9 @@ int main(int argc, char **argv) {
     err = (backend == SoundIoBackendNone) ?
         soundio_connect(soundio) : soundio_connect_backend(soundio, backend);
 
-    if (err)
+    if (err) {
         panic("error reconnecting: %s", soundio_strerror(err));
+    }
 
     fprintf(stderr, "OK reconnected successfully to %s\n", soundio_backend_name(soundio->current_backend));
 

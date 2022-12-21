@@ -24,8 +24,10 @@ static void playback_thread_run(void *arg) {
     int free_bytes = soundio_ring_buffer_capacity(&osd->ring_buffer) - fill_bytes;
     int free_frames = free_bytes / outstream->bytes_per_frame;
     osd->frames_left = free_frames;
-    if (free_frames > 0)
+    if (free_frames > 0) {
         outstream->write_callback(outstream, 0, free_frames);
+    }
+
     double start_time = soundio_os_get_time();
     long frames_consumed = 0;
 
@@ -41,8 +43,9 @@ static void playback_thread_run(void *arg) {
             int free_bytes = soundio_ring_buffer_capacity(&osd->ring_buffer);
             int free_frames = free_bytes / outstream->bytes_per_frame;
             osd->frames_left = free_frames;
-            if (free_frames > 0)
+            if (free_frames > 0) {
                 outstream->write_callback(outstream, 0, free_frames);
+            }
             frames_consumed = 0;
             start_time = soundio_os_get_time();
             continue;
@@ -70,8 +73,9 @@ static void playback_thread_run(void *arg) {
         if (frames_to_kill > fill_frames) {
             outstream->underflow_callback(outstream);
             osd->frames_left = free_frames;
-            if (free_frames > 0)
+            if (free_frames > 0) {
                 outstream->write_callback(outstream, 0, free_frames);
+            }
             frames_consumed = 0;
             start_time = soundio_os_get_time();
         } else if (free_frames > 0) {
@@ -130,18 +134,22 @@ static void capture_thread_run(void *arg) {
 static void destroy_dummy(struct SoundIoPrivate *si) {
     struct SoundIoDummy *sid = &si->backend_data.dummy;
 
-    if (sid->cond)
+    if (sid->cond) {
         soundio_os_cond_destroy(sid->cond);
+    }
 
-    if (sid->mutex)
+    if (sid->mutex) {
         soundio_os_mutex_destroy(sid->mutex);
+    }
 }
 
 static void flush_events_dummy(struct SoundIoPrivate *si) {
     struct SoundIo *soundio = &si->pub;
     struct SoundIoDummy *sid = &si->backend_data.dummy;
-    if (sid->devices_emitted)
+    if (sid->devices_emitted) {
         return;
+    }
+
     sid->devices_emitted = true;
     soundio->on_devices_change(soundio);
 }
@@ -236,8 +244,9 @@ static int outstream_begin_write_dummy(struct SoundIoPrivate *si,
     struct SoundIoOutStream *outstream = &os->pub;
     struct SoundIoOutStreamDummy *osd = &os->backend_data.dummy;
 
-    if (*frame_count > osd->frames_left)
+    if (*frame_count > osd->frames_left) {
         return SoundIoErrorInvalid;
+    }
 
     char *write_ptr = soundio_ring_buffer_write_ptr(&osd->ring_buffer);
     for (int ch = 0; ch < outstream->layout.channel_count; ch += 1) {
@@ -386,8 +395,9 @@ static int instream_get_latency_dummy(struct SoundIoPrivate *si, struct SoundIoI
 static int set_all_device_formats(struct SoundIoDevice *device) {
     device->format_count = 18;
     device->formats = ALLOCATE(enum SoundIoFormat, device->format_count);
-    if (!device->formats)
+    if (!device->formats) {
         return SoundIoErrorNoMem;
+    }
 
     device->formats[0] = SoundIoFormatFloat32NE;
     device->formats[1] = SoundIoFormatFloat32FE;
@@ -422,10 +432,14 @@ static void set_all_device_sample_rates(struct SoundIoDevice *device) {
 static int set_all_device_channel_layouts(struct SoundIoDevice *device) {
     device->layout_count = soundio_channel_layout_builtin_count();
     device->layouts = ALLOCATE(struct SoundIoChannelLayout, device->layout_count);
-    if (!device->layouts)
+    if (!device->layouts) {
         return SoundIoErrorNoMem;
-    for (int i = 0; i < device->layout_count; i += 1)
+    }
+
+    for (int i = 0; i < device->layout_count; i += 1) {
         device->layouts[i] = *soundio_channel_layout_get_builtin(i);
+    }
+
     return 0;
 }
 
