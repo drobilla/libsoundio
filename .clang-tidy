@@ -1,0 +1,29 @@
+# Copyright 2022 David Robillard <d@drobilla.net>
+# SPDX-License-Identifier: 0BSD OR MIT
+
+Checks: >
+  *,
+  -*-braces-around-statements,
+  -*-else-after-return,
+  -*-magic-numbers,
+  -*-narrowing-conversions,
+  -altera-*,
+  -bugprone-assignment-in-if-condition,
+  -bugprone-branch-clone,
+  -bugprone-easily-swappable-parameters,
+  -cppcoreguidelines-avoid-non-const-global-variables,
+  -cppcoreguidelines-init-variables,
+  -llvm-include-order,
+  -llvmlibc-*,
+  -misc-unused-parameters,
+  -modernize-macro-to-enum,
+  -readability-function-cognitive-complexity,
+  -readability-identifier-length,
+CheckOptions:
+  - key:   hicpp-uppercase-literal-suffix.NewSuffixes
+    value: 'L;U;UL;ULL'
+  - key:   readability-uppercase-literal-suffix.NewSuffixes
+    value: 'L;U;UL;ULL'
+FormatStyle: file
+HeaderFilterRegex: '.*/soundio/.*\.h'
+WarningsAsErrors: '*'

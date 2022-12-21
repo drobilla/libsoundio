@@ -1,0 +1,10 @@
+# Copyright 2022 David Robillard <d@drobilla.net>
+# SPDX-License-Identifier: 0BSD OR MIT
+
+Checks: >
+  -cert-err33-c,
+  -cert-err34-c,
+  -cert-msc30-c,
+  -cert-msc50-cpp,
+  -concurrency-mt-unsafe,
+InheritParentConfig: true

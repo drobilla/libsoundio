@@ -1,0 +1,10 @@
+# Copyright 2022 David Robillard <d@drobilla.net>
+# SPDX-License-Identifier: 0BSD OR MIT
+
+Checks: >
+  -android-cloexec-fopen,
+  -bugprone-implicit-widening-of-multiplication-result,
+  -cert-err33-c,
+  -cert-err34-c,
+  -concurrency-mt-unsafe,
+InheritParentConfig: true

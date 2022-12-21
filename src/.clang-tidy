@@ -1,0 +1,22 @@
+# Copyright 2022 David Robillard <d@drobilla.net>
+# SPDX-License-Identifier: 0BSD OR MIT
+
+Checks: >
+  -android-cloexec-pipe2,
+  -bugprone-implicit-widening-of-multiplication-result,
+  -bugprone-integer-division,
+  -bugprone-reserved-identifier,
+  -cert-dcl37-c,
+  -cert-dcl51-cpp,
+  -clang-analyzer-core.NullDereference,
+  -clang-analyzer-deadcode.DeadStores,
+  -clang-analyzer-optin.portability.UnixAPI,
+  -clang-analyzer-unix.Malloc,
+  -clang-analyzer-unix.MallocSizeof,
+  -clang-analyzer-valist.Uninitialized,
+  -clang-analyzer-valist.Unterminated,
+  -hicpp-multiway-paths-covered,
+  -hicpp-signed-bitwise,
+  -readability-isolate-declaration,
+  -readability-non-const-parameter,
+InheritParentConfig: true
